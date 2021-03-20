@@ -2226,16 +2226,16 @@ Author: mikiyan1978 <mikiyan1978@gmail.com>
 
 Package: com.mikiyan1978.yoasobi
 Architecture: iphoneos-arm
-Version: 1.0
+Version: 1.1
 Section: Ringtones
 Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
 Depends: com.twickd.zeph.toneenabler13
-Filename: ./debs/com.mikiyan1978.yoasobi_1.0_iphoneos-arm.deb
-Size: 23127650
-MD5sum: fb1ea5f69e32e30799cc6d28cc952b1a
-SHA1: d8659061de6d398cefe5c84928ab752ace7992de
-SHA256: 61bdd72fd64947f9c376be0443c60c87b3fdebdf9900fdc784571a61262af95b
-SHA512: bc60c5a51d0e12b3a515769024803b5f2c33c83ed0320d7d504c18787d88cde0a135a36715f4eb868983d0bdda8acf77b4cd0f62d48150258120aa05e6a7adac
+Filename: ./debs/com.mikiyan1978.yoasobi_1.1_iphoneos-arm.deb
+Size: 27485192
+MD5sum: ad5bc7e17bc474da98ea894572a566ef
+SHA1: b8204549d2f9fc0048e18eed766339be83321e7f
+SHA256: 15ce7da35c097e8956646ff5c7b63cc996712802f79902c52886182976684df4
+SHA512: e916e430b51a9397e186d79d4ad6ed4def7bb675042a26df76ac406d26deb5c3ca9f47fe46ef68e4e9b10974e24f1a96ce6db4ba46a317167beeb5f614c9a9db
 Description: ヨアソビ着信音
 Name: YOASOBI Ringtones
 Author: mikiyan1978 <mikiyan1978@gmail.com>
