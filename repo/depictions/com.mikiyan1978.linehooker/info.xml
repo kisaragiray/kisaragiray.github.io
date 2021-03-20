@@ -1,0 +1,50 @@
+<package>
+	<id>com.mikiyan1978.linehooker</id>
+	<name>Full Package</name>
+	<version>5.0</version>
+	<compatibility>
+		<firmware>
+			<miniOS>0</miniOS>
+		</firmware>
+	</compatibility>
+	<dependencies>
+		<package><![CDATA[
+		mobilesubstrate<br/> 
+		preferenceloader<br/> 
+		ws.hbang.common (>= 1.14)<br/> 
+		com.mikiyan1978.libpowercontroller<br/>  
+		]]></package>
+	</dependencies>
+	<!--<shortDescription>LINE拡張Tweak</shortDescription>-->
+	<descriptionlist>
+		<description>LINE拡張Tweak</description>
+		<!--<description></description>-->
+		<!--<description></description>-->
+	</descriptionlist>
+	<screenshots>
+		<screenshot>
+			<description>LINEhooker</description>
+			<image>1.jpg</image>
+		</screenshot>
+		<screenshot>
+			<description>LINEhooker</description>
+			<image>2.jpg</image>
+		</screenshot>
+		<screenshot>
+			<description>LINEhooker</description>
+			<image>3.jpg</image>
+		</screenshot>
+	</screenshots>
+	<changelog>
+		<change>着せ替え無料化を復活させました</change>
+		<!--<change></change>-->
+		<!--<change></change>-->
+	</changelog>
+	<links>
+		<link>
+			<name>リポジトリ</name>
+			<url>https://kisaragiray.github.io/repo/</url>
+			<iconclass>fa fa-shield</iconclass>
+		</link>
+	</links>
+</package>

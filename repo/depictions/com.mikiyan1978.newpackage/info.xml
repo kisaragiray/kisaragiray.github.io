@@ -1,0 +1,45 @@
+<package>
+	<id>com.supermamon.fullpackage</id>
+	<name>Full Package</name>
+	<version>9999</version>
+	<compatibility>
+		<firmware>
+			<miniOS>12.4</miniOS>
+		</firmware>
+	</compatibility>
+	<dependencies>
+		<package>mobilesubstrate</package>
+	</dependencies>
+	<shortDescription>Add a Respring button at the top right of the settings app</shortDescription>
+	<descriptionlist>
+		<description>これは完全な描写になるパッケージです。</description>
+		<description>より多くの説明行があります。</description>
+		<description><![CDATA[
+		You can also have<br/> 
+		a multi-line item.
+		]]>
+		</description>
+	</descriptionlist>
+	<screenshots>
+		<screenshot>
+			<description>This is a description for screenshot 1. It's Cydia!</description>
+			<image>test.jpg</image>
+		</screenshot>		
+		<screenshot>
+			<description>This is a description for screenshot 2. It's another Cydia!</description>
+			<image>cydia.jpg</image>
+		</screenshot>		
+	</screenshots>
+	<changelog>
+		<change>Second release</change>
+		<change>It has feature 1</change>
+		<change>It has feature 2</change>
+	</changelog>
+	<links>
+		<link>
+			<name>リポジトリ</name>
+			<url>https://kisaragiray.github.io/repo/</url>
+			<iconclass>fa fa-reddit</iconclass>
+		</link>
+	</links>
+</package>
