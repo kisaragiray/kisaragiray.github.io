@@ -215,23 +215,6 @@ Author: Zeph <aboutzeph@gmail.com>
 Depiction: https://repo.twickd.com/package/com.twickd.zeph.toneenabler13
 SileoDepiction: https://repo.twickd.com/package/com.twickd.zeph.toneenabler13/native
 
-Package: com.rileytestut.altdaemon
-Architecture: iphoneos-arm
-Version: 0.1
-Section: System
-Maintainer: Riley Testut
-Depends:
-Filename: ./debs/AltDaemon.deb
-Size: 626294
-MD5sum: 19f56ed6c7fbf109d30ee9ff9bf1406e
-SHA1: e3364900b8ef96fcd942ea705847a78f7fe6b149
-SHA256: 51b68a7e4e3cf7bdeb92b3b5dc8e5fd160e2e2721defec7866c563a339bb72d3
-SHA512: 57de8148199d6415493ea93fdae63f32248f7359e59d426866018e25eec4c7502af080968db9b79b8fd8eb8ef9666faf3087a490210d9db982c303dce472c5bb
-Homepage: https://altstore.io
-Description: AltDaemon allows AltStore to install and refresh apps without a computer.
-Name: AltDaemon
-Author: Riley Testut
-
 Package: com.pheux.fixrandomresprings
 Architecture: iphoneos-arm
 Version: 1.0
@@ -2388,23 +2371,6 @@ SHA512: 06350a6ef1fb8a36d2eda06cfd16b876a45def26a36e0c2c6a4b02d3c97b5100b2349818
 Description: Add an image to the background of Filza File Manager.
 Name: Filza File Manager ImageX
 Author: mikiyan1978 <mikiyan1978@gmail.com>
-
-Package: com.rileytestut.altstore.alpha.jailbroken
-Architecture: iphoneos-arm
-Version: 1.4a4
-Section: Tweaks
-Maintainer: Riley Testut
-Pre-Depends: firmware (>= 12.2), com.linusyang.appinst
-Depends: com.rileytestut.altdaemon
-Filename: ./debs/com.rileytestut.AltStore.Alpha.Jailbroken_iphoneos-arm.deb
-Size: 3265708
-MD5sum: 09d405b45df34fc6c4ac04c6443d8e29
-SHA1: fb82f4eea5b7f77e63a74a6eae8f2149a82dd05d
-SHA256: 14545ac56fc41bc64763d1da0f291851b72832f0f793eb213bae3539af7584c3
-SHA512: af599dad9e7de837f12f9d15847a68271d9f547dd2c0268939dd77d71674d17e231627883973cdfe65d19b63c386cc4a733b020817737aba3f6738383e97f178
-Description: Jailbroken version of AltStore with on device signing feauture.
-Name: AltStore (ALPHA)
-Author: Riley Testut - T7Y
 
 Package: com.rpgfarm.afontkoreanunicodefix
 Architecture: iphoneos-arm
