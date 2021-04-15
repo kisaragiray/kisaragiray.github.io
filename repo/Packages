@@ -2645,6 +2645,28 @@ Sponsor: thebigboss.org <http://thebigboss.org>
 dev: rpetrich
 Icon: file:///Applications/Activator.app/Icon-Small-modern@2x.png
 
+Package: libflex
+Architecture: iphoneos-arm
+Version: 4.1.1-1
+Section: Development
+Maintainer: BigBoss <bigboss@thebigboss.org>
+Installed-Size: 8312
+Depends: firmware(>= 9.0), mobilesubstrate
+Conflicts: com.pantsthief.libflex
+Filename: ./debs/libflex_4.1.1-1.deb
+Size: 1339258
+MD5sum: ca9d88f97a27d7580b72aa3081ccdea4
+SHA1: 9ab5184e81a431232570c80337600a8a379e840d
+SHA256: db6134fd4c140b10dcdb0499bea4fc431c621c055aefbb56c86d865f18cef7fb
+SHA512: 7db165a0c4cb8a8b8be503f877ce04256357309a34e503d838a04893b9c980857ae44c0196a238d67a1ec31a4e476831382f8e87e26600a8bb58fb6618002ae0
+Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=libflexDp
+Description: A library for Flipboard Explorer.
+Tag: cydia::obsolete, purpose::library, compatible::ios8, compatible::ios9, compatible::ios10, compatible::ios11, compatible::ios12, compatible::ios13
+Name: libFLEX
+Author: Tanner Bennett <tannerbennett@me.com>
+dev: tannerbennett
+Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=libflexDp
+
 Package: me.alfhaily.cercube
 Architecture: iphoneos-arm
 Version: 5.1.18
