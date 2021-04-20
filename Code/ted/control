@@ -1,0 +1,10 @@
+Package: com.mikiyan1978.ted
+Name:  Mod Menu
+Depends: mobilesubstrate
+Version: 1.0
+Architecture: iphoneos-arm
+Description:  Mod Menu by mikiyan1978 <mikiyan1978@gmail.com>!
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+Section: Tweaks
+Homepage: 
