@@ -1,3 +1,5 @@
+#import "XXRootViewController.h"
+#import "HelpViewController.h"
 #import "SettingViewController.h"
 
 @implementation SettingViewController

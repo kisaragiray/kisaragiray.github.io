@@ -7,7 +7,7 @@ FINALPACKAGE=1
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = respaddpref
-$(TWEAK_NAME)_FILES = $(wildcard *.xm)
+$(TWEAK_NAME)_FILES = $(wildcard *.xm) respaddpref.xmi
 ADDITIONAL_CFLAGS += -DTHEOS_LEAN_AND_MEAN
 
 include $(THEOS_MAKE_PATH)/tweak.mk

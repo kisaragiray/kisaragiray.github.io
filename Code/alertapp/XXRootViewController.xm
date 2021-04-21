@@ -239,27 +239,7 @@ UDID : %@\r\n ", \
 		initWithFrame:[UIScreen mainScreen].bounds];
 
 	//AVPlayerItem
-	addAvPlayer(avUrl, 0.1, self);
-
-	[NSNotificationCenter.defaultCenter 
-		addObserver:self 
-		selector:@selector(playerAdjustFrame) 
-		name:UIApplicationDidFinishLaunchingNotification 
-		object:nil];
-
-	[NSNotificationCenter.defaultCenter 
-		addObserver:self 
-		selector:@selector(playerAdjustFrame) 
-		name:UIDeviceOrientationDidChangeNotification 
-		object:nil];
-
-	player.actionAtItemEnd = AVPlayerActionAtItemEndNone; 
-
-	[NSNotificationCenter.defaultCenter 
-		addObserver:self 
-		selector:@selector(playerItemDidReachEnd:) 
-		name:AVPlayerItemDidPlayToEndTimeNotification 
-		object:[player currentItem]];
+	[self initAddAvPlayer];
 
 	//現在時刻
 	[self initCurrentTimeLabel];
@@ -478,6 +458,30 @@ UDID : %@\r\n ", \
 	[self presentViewController:alert 
 		animated:YES 
 		completion:nil];
+}
+
+- (void)initAddAvPlayer {
+	addAvPlayer(avUrl, 0.1, self);
+
+	[NSNotificationCenter.defaultCenter 
+		addObserver:self 
+		selector:@selector(playerAdjustFrame) 
+		name:UIApplicationDidFinishLaunchingNotification 
+		object:nil];
+
+	[NSNotificationCenter.defaultCenter 
+		addObserver:self 
+		selector:@selector(playerAdjustFrame) 
+		name:UIDeviceOrientationDidChangeNotification 
+		object:nil];
+
+	player.actionAtItemEnd = AVPlayerActionAtItemEndNone; 
+
+	[NSNotificationCenter.defaultCenter 
+		addObserver:self 
+		selector:@selector(playerItemDidReachEnd:) 
+		name:AVPlayerItemDidPlayToEndTimeNotification 
+		object:[player currentItem]];
 }
 
 - (void)playerAdjustFrame {

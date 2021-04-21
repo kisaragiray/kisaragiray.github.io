@@ -5,7 +5,17 @@
 #import <notify.h>
 #import <huptimeAlert.h>
 
+@interface UIApplication (Undocumented)
+- (void) launchApplicationWithIdentifier: (NSString*)identifier suspended: (BOOL)suspended;
+@end
+
 @interface PSUIPrefsListController : UIViewController
+@end
+
+@interface BackupController : NSObject
++ (id)sharedInstance;
+- (id)init;
+- (void)startBackup;
 @end
 
 UIBarButtonItem *btn;
@@ -13,6 +23,21 @@ UIBarButtonItem *btn;
 int mainInt;
 NSTimer *timer;
 UIAlertController *alertController;
+
+%hook BackupController
+static BackupController *sharedInstance;
+
+- (id)init {
+	id original = %orig;
+	sharedInstance = original;
+	return original;
+}
+
+%new
++ (id)sharedInstance {
+	return sharedInstance;
+}
+%end
 
 %hook PSUIPrefsListController
 
@@ -80,18 +105,30 @@ UIAlertController *alertController;
 		}]];
 
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"iCloud Backup"
+		actionWithTitle:@"タップテスト"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
-		notify_post("com.mikiyan1978.isBackup");
+
+		dispatch_after(dispatch_time
+			(DISPATCH_TIME_NOW, 
+			(int64_t)(5.0 * NSEC_PER_SEC)), 
+			dispatch_get_main_queue(), ^{
+
+			[(BackupController *)[%c(BackupController) 
+				sharedInstance] startBackup];
+
+			});
+
 		}]];
 
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@""
+		actionWithTitle:@"バックグラウンド起動"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
-		
-	}]];
+		[[UIApplication sharedApplication] 
+			launchApplicationWithIdentifier:@"prefs:root=APPLE_ACCOUNT/ICLOUD_SERVICE/BACKUP" 
+			suspended:YES];
+		}]];
 
 	//キャンセル
 	[alert addAction:[UIAlertAction 

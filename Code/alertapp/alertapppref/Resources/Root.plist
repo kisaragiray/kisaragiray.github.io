@@ -28,16 +28,6 @@
 			<key>label</key>
 			<string>Home-動画パス:</string>
 		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>defaults</key>
-			<string>com.mikiyan1978.alertapppref</string>
-			<key>key</key>
-			<string>savUrl</string>
-			<key>label</key>
-			<string>設定-動画パス:</string>
-		</dict>
 	</array>
 	<key>title</key>
 	<string>PowerControllerApp</string>

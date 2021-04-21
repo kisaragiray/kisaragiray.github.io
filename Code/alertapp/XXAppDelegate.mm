@@ -4,10 +4,14 @@
 #import "HelpViewController.h"
 #import <libpowercontroller/powercontroller.h>
 
-UITabBarController *tbc;
-
-@interface XXRootAppApplication : UIViewController
+/*@interface XXRootAppApplication : UIViewController
 @end
+
+@interface SettingViewController : UIViewController
+@end
+
+@interface HelpViewController : UIViewController
+@end*/
 
 @implementation XXAppDelegate
 
@@ -24,15 +28,15 @@ UITabBarController *tbc;
 		setToolbarHidden:NO 
 		animated:YES];
 
-	/*tbc = [UITabBarController new];
+	self.tabBarController = [UITabBarController new];
 
-	XXRootViewController  *XXVC  = [XXRootViewController new];
-	SettingViewController  *sVC  = [SettingViewController new];
-	HelpViewController  *hVC  = [HelpViewController new];
+	XXRootViewController  *homeView  = [XXRootViewController new];
+	SettingViewController  *settingView  = [SettingViewController new];
+	HelpViewController  *helpView  = [HelpViewController new];
 
-	XXVC.title = @"Home";
-	sVC.title = @"設定";
-	hVC.title = @"Help";
+	homeView.title = @"Home";
+	settingView.title = @"設定";
+	helpView.title = @"Help";
 
 	[[UITabBarItem appearance] 
 		setTitleTextAttributes:[NSDictionary 
@@ -40,13 +44,18 @@ UITabBarController *tbc;
 		forState:UIControlStateNormal];
 
 	[[UITabBarItem appearance] 
-		setTitlePositionAdjustment:UIOffsetMake(0, - 15)];
+		setTitlePositionAdjustment:UIOffsetMake(0, 0)];
 
-	tbc.viewControllers = [NSArray 
-		arrayWithObjects:XXVC, sVC, hVC, nil];
+	NSArray *items = [NSArray 
+		arrayWithObjects:
+		settingView, 
+		homeView, 
+		helpView, nil];
 
-	_window.rootViewController = tbc;
-	[_window addSubview:tbc.view];*/
+	self.tabBarController.viewControllers = items;
+
+	_window.rootViewController = self.tabBarController;
+	[_window addSubview:self.tabBarController.view];
 	[_window makeKeyAndVisible];
 
 	[self ShortcutItem];

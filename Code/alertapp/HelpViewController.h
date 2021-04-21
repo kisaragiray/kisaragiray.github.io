@@ -1,6 +1,10 @@
 @import UIKit;
 @import WebKit;
 
-@interface HelpViewController : UIViewController<WKNavigationDelegate, WKUIDelegate>
+#define W [UIScreen mainScreen].bounds.size.width
+#define H [UIScreen mainScreen].bounds.size.height
+
+@interface HelpViewController : UIViewController
 @property (nonatomic, retain) UIWindow *HVwindow;
 @end
+
