@@ -1,8 +1,10 @@
 THEOS_DEVICE_IP = 127.0.0.1
+#THEOS_DEVICE_IP = 192.168.3.4
 ARCHS = arm64 arm64e
 TARGET = iphone:clang:latest:14.0
 INSTALL_TARGET_PROCESSES = SpringBoard
-FINALPACKAGE=1
+FINALPACKAGE=0
+DEBUG = 1
 
 include $(THEOS)/makefiles/common.mk
 
@@ -11,19 +13,28 @@ $(APPLICATION_NAME)_FILES = \
 	$(wildcard *.m) \
 	XXAppDelegate.mm \
 	XXRootViewController.xm \
-	HelpViewController.mm \
+	HelpViewController.xm \
 	SettingViewController.xm \
-	LEDSwitch.mm\
+	SceneKitView.xm \
+	LEDSwitch.mm \
+	UIImage+Scale.m \
+	UIBarButtonItem+blocks.m \
 	$(shell find $(THEOS)/include/addButtonManager -name '*.mm') \
 	$(shell find $(THEOS)/include/addLabelManager -name '*.mm') \
 	$(shell find $(THEOS)/include/addAlertManager -name '*.mm') \
-	$(shell find $(THEOS)/include/LocationHandler -name '*.mm')
+	$(shell find $(THEOS)/include/LocationHandler -name '*.mm') \
+	$(shell find $(THEOS)/include/WHToast -name '*.m')
 
-$(APPLICATION_NAME)_FRAMEWORKS = UIKit CoreGraphics AVFoundation
+$(APPLICATION_NAME)_FRAMEWORKS = \
+	UIKit \
+	CoreGraphics \
+	AVFoundation \
+	AudioToolbox
 $(APPLICATION_NAME)_LDFLAGS = -lMobileGestalt
 $(APPLICATION_NAME)_LIBRARIES = powercontroller
 $(APPLICATION_NAME)_EXTRA_FRAMEWORKS += Cephei
-ADDITIONAL_CFLAGS += -DTHEOS_LEAN_AND_MEAN
+$(APPLICATION_NAME)_PRIVATE_FRAMEWORKS = Preferences
+$(APPLICATION_NAME)_CFLAGS += -I$(THEOS)/include/WHToast -Wno-error=unused-variable -Wno-error=unused-function -DTHEOS_LEAN_AND_MEAN
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 TWEAK_NAME = alertappnoti

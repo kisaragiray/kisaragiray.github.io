@@ -12,36 +12,26 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
 
-#define W [UIScreen mainScreen].bounds.size.width
-#define H [UIScreen mainScreen].bounds.size.height
+#define PCAImagePath @"/Applications/PowerControllerApp.app/AppIcon29x29@2x.png"
 
 NSString *avUrl;
-
 NSString *pcAppmessage = @"Respring\n uicache\n セーフモード\n reboot\n Cydiaインストール";
 NSString *pcapptitle = @"🥺PowerControllerApp🥺";
 SEL pcappAction = @selector(tapbt);
-
 NSString *message = @"uicache実行中";
-
 float mainInt;
-
 UIColor *greenColor;
 UIColor *redColor;
-
 double latitude;
 double longitude;
-
 SEL tapButton = @selector(tappedButton:);
-
 NSString *uiViewButtonTitle = @"テストボタン";
 SEL uiViewButtonAction = @selector(uiViewButtonAction);
-
 UIView *cashapeView;
-
 UIDevice *dev = [UIDevice currentDevice];
 CGPoint lastMenuLocation;
-/////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////
 NSString *ComputerName() {
 	NSString *ComputerName = nil;
 	CFStringRef value = (CFStringRef) MGCopyAnswer(kMGComputerName);
@@ -175,14 +165,17 @@ UDID : %@\r\n ", \
 		ChipID(), 
 		BatteryCurrentCapacity(), 
 		UDID()];
-/////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
 @implementation XXRootViewController
 
-- (void)viewDidLoad { // loadViewの次に呼ばれる
+- (void)viewDidLoad { // loadViewの次に呼ばれ、一度だけ生成される
 	[super viewDidLoad];
+	[LocationHandler.sharedInstance setDelegate:self];
+	[LocationHandler.sharedInstance startUpdating];
+	[self initUIBarButtonItem];
 
-	[addButtonManager.sharedInstance 
+	/*[addButtonManager.sharedInstance 
 		addButton:self.pcappButton 
 		title:pcapptitle 
 		delegate:self 
@@ -191,9 +184,9 @@ UDID : %@\r\n ", \
 		multiplierX:1.0f 
 		constantX:0.0f 
 		multiplierY:0.4f 
-		constantY:0.0f];
+		constantY:0.0f];*/
 
-	[addButtonManager.sharedInstance 
+	/*[addButtonManager.sharedInstance 
 		addButton:self.uiViewButton 
 		title:uiViewButtonTitle 
 		delegate:self 
@@ -202,12 +195,7 @@ UDID : %@\r\n ", \
 		multiplierX:1.0f 
 		constantX:0.0f 
 		multiplierY:1.7f 
-		constantY:0.0f];
-
-	[LocationHandler.sharedInstance setDelegate:self];
-	[LocationHandler.sharedInstance startUpdating];
-
-	[self initUIBarButtonItem];
+		constantY:0.0f];*/
 
 	//加速度センサー
 	//[self initAccelerometer];
@@ -219,8 +207,8 @@ UDID : %@\r\n ", \
 	//[self fadeOut:self.sampleView2];
 
 	//UISwitch
-	LEDSwitch *ledSwitch = [LEDSwitch new];
-	[ledSwitch initSwitch:self.view];
+	//LEDSwitch *ledSwitch = [LEDSwitch new];
+	//[ledSwitch initSwitch:self.view];
 
 	//[self initButton];
 
@@ -229,8 +217,6 @@ UDID : %@\r\n ", \
 
 	//UIStackView
 	//[self initStackView];
-
-	[self.view layoutIfNeeded];
 
 }
 
@@ -242,9 +228,9 @@ UDID : %@\r\n ", \
 	[self initAddAvPlayer];
 
 	//現在時刻
-	[self initCurrentTimeLabel];
+	//[self initCurrentTimeLabel];
 
-	[self.view layoutIfNeeded];
+	//[self.view layoutIfNeeded];
 
 }
 
@@ -255,7 +241,7 @@ UDID : %@\r\n ", \
 		message:pcAppmessage 
 		preferredStyle:UIAlertControllerStyleActionSheet];
 
-	//Respring////////////////////////////////////////////////////////
+	//Respring////////////////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Respring" 
 		style:UIAlertActionStyleDefault 
@@ -263,7 +249,7 @@ UDID : %@\r\n ", \
 		notify_post(krespring);
 		}]];
 
-	//カウントダウンRespring/////////////////////////////////////////
+	//カウントダウンRespring///////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"カウントダウンRespring" 
 		style:UIAlertActionStyleDefault 
@@ -291,7 +277,7 @@ UDID : %@\r\n ", \
 		notify_post(krespring);
 		}]];
 
-	//キャンセル///////////////////////////////////////////////////////
+	//キャンセル////////////////////////////////////////////////////////////
 	[self.timeralertController addAction:[UIAlertAction 
 		actionWithTitle:@"キャンセル"
 		style:UIAlertActionStyleCancel 
@@ -305,7 +291,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//uicache(通知あり)//////////////////////////////////////////////
+	//uicache(通知あり)////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"uicache" 
 		style:UIAlertActionStyleDefault 
@@ -317,12 +303,20 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//セーフモード/////////////////////////////////////////////////////
+	//セーフモード/////////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Substrate Safe Mode" 
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
 		notify_post(ksafemode);
+		}]];
+
+	//reboot
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"reboot" 
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		notify_post(kreboot);
 		}]];
 
 	//ldrestart
@@ -333,7 +327,15 @@ UDID : %@\r\n ", \
 		notify_post(klibpowercontrollerldrestart);
 		}]];
 
-	//libnotifications/通知テスト//////////////////////////////////////
+	//launchctl reboot userspace
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"userspace reboot" 
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		notify_post("com.mikiyan1978.rebootUserspace");
+		}]];
+
+	//libnotifications/通知テスト////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"libnotifications通知" 
 		style:UIAlertActionStyleDefault 
@@ -341,7 +343,7 @@ UDID : %@\r\n ", \
 		notify_post("com.mikiyan1978.alertapplibnotificationsuicachenoti");
 		}]];
 
-	//libbulletin/通知テスト///////////////////////////////////////////
+	//libbulletin/通知テスト//////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"libbulletin通知" 
 		style:UIAlertActionStyleDefault 
@@ -353,7 +355,7 @@ UDID : %@\r\n ", \
 		}
 		}]];
 
-	//UNUserNotificationCenter/通知テスト//////////////////////////
+	//UNUserNotificationCenter/通知テスト/////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"UNUserNotificationCenter通知" 
 		style:UIAlertActionStyleDefault 
@@ -361,7 +363,7 @@ UDID : %@\r\n ", \
 		[self UNUserNotificationCenterHandler];
 		}]];
 
-	//schedule/通知テスト////////////////////////////////////////////
+	//schedule/通知テスト////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"スケジューリング通知" 
 		style:UIAlertActionStyleDefault 
@@ -371,7 +373,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//通知キャンセル//////////////////////////////////////////////////
+	//通知キャンセル//////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"通知キャンセル" 
 		style:UIAlertActionStyleDefault 
@@ -382,7 +384,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//CFNotificationCenterPostNotification(sbreload)//////////////
+	//CFNotificationCenterPostNotification(sbreload)///////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"CFNPostNotification(sbreload)" 
 		style:UIAlertActionStyleDefault 
@@ -392,7 +394,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//addAlertManager///////////////////////////////////////////////
+	//addAlertManager////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"addAlertManager" 
 		style:UIAlertActionStyleDefault 
@@ -411,7 +413,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//プログレスバー//////////////////////////////////////////////////
+	//プログレスバー///////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"プログレスバー"
 		style:UIAlertActionStyleDefault 
@@ -427,7 +429,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//Device Information////////////////////////////////////////////
+	//Device Information//////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Device Information"
 		style:UIAlertActionStyleDefault 
@@ -449,7 +451,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//キャンセル///////////////////////////////////////////////////////
+	//キャンセル////////////////////////////////////////////////////////////
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"キャンセル" 
 		style:UIAlertActionStyleCancel 
@@ -460,6 +462,7 @@ UDID : %@\r\n ", \
 		completion:nil];
 }
 
+#pragma mark - player
 - (void)initAddAvPlayer {
 	addAvPlayer(avUrl, 0.1, self);
 
@@ -494,6 +497,7 @@ UDID : %@\r\n ", \
 	[player play];
 }
 
+#pragma mark - CurrentTimeLabel
 - (void)initCurrentTimeLabel {
 	self.tlabel = [UILabel new];
 	[self.tlabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -532,6 +536,18 @@ UDID : %@\r\n ", \
 		repeats:YES] fire];
 }
 
+- (void)updateClock {
+	NSDate *date = [NSDate date];
+	NSDateFormatter *form = [NSDateFormatter new];
+	[form setLocale:[[NSLocale alloc] 
+		initWithLocaleIdentifier:@"ja_JP"]];
+	[form setDateFormat:@"yyyy/MM/dd HH:mm:ss (E)"];
+	NSString *datetime = [form stringFromDate:date];
+	self.tlabel.text = datetime;
+	self.tlabel.textColor = [self randomColor];
+}
+
+#pragma mark - countDown
 - (NSString *)countDownString {
 	return [NSString stringWithFormat:@"%.2f 秒後にRespringします", mainInt];
 }
@@ -549,17 +565,6 @@ UDID : %@\r\n ", \
 	} else {
 		self.timeralertController.message = [self countDownString];
 	}
-}
-
-- (void)updateClock {
-	NSDate *date = [NSDate date];
-	NSDateFormatter *form = [NSDateFormatter new];
-	[form setLocale:[[NSLocale alloc] 
-		initWithLocaleIdentifier:@"ja_JP"]];
-	[form setDateFormat:@"yyyy/MM/dd HH:mm:ss (E)"];
-	NSString *datetime = [form stringFromDate:date];
-	self.tlabel.text = datetime;
-	self.tlabel.textColor = [self randomColor];
 }
 
 - (void)UNUserNotificationCenterHandler {
@@ -1205,42 +1210,98 @@ UDID : %@\r\n ", \
 
 - (void)initUIBarButtonItem {
 	self.rightButtonItem = [[UIBarButtonItem alloc] 
-		initWithTitle:@"Help" 
+		initWithTitle:@"❤️" 
 		style:UIBarButtonItemStyleDone 
 		target:self 
-		action:@selector(rightButtonTapped)];
+		action:@selector(shareTapped)];
+
+	self.rightButtonItem1 = [[UIBarButtonItem alloc] 
+		initWithImage:[UIImage imageNamed:@"power"] 
+		style:UIBarButtonItemStylePlain 
+		actionHandler:^{
+		[self tapbt];
+		}];
 
 	self.leftButtonItem = [[UIBarButtonItem alloc] 
-		initWithTitle:@"Info" 
+		initWithTitle:@"📱" 
 		style:UIBarButtonItemStyleDone 
 		target:self 
 		action:@selector(leftButtonTapped)];
 
-	self.navigationItem.rightBarButtonItem = self.rightButtonItem;
+	self.navigationItem.rightBarButtonItems = @[
+		self.rightButtonItem, 
+		self.rightButtonItem1];
+
+	//self.navigationItem.rightBarButtonItem = self.rightButtonItem;
 	self.navigationItem.leftBarButtonItem = self.leftButtonItem;
 }
 
-- (void)rightButtonTapped {
-	HelpViewController *hVC = [HelpViewController new];
-	[self.navigationController pushViewController:hVC 
-		animated:YES];
-}
-
 - (void)leftButtonTapped {
+	UIAlertController *alert = [UIAlertController 
+		alertControllerWithTitle:@"Device Information\r\n" 
+		message:isDeviceInfoStr 
+		preferredStyle:UIAlertControllerStyleAlert];
 
-	UIAlertController *alert;
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"キャンセル" 
+		style:UIAlertActionStyleCancel 
+		handler:nil]];
 
-	[addAlertManager.sharedInstance 
-			addAlert:alert 
-			preferredStyle:UIAlertControllerStyleAlert 
-			alertControllerWithTitle:[NSString stringWithFormat:@"%@", UDID()] 
-			alertMessage:pcAppmessage 
-			actionWithTitle:[self getUUID] 
-			target:self 
-			actionHandler:^(){
-			
-			}];
+	[self presentViewController:alert 
+		animated:YES 
+		completion:nil];
 }
+
+//シェア
+- (void)shareTapped {
+   
+    NSString *shareText = @"#Power Controller App X by @mikiyan1978! Download from https://kisaragiray.github.io/repo/ repo in Cydia for free!";
+	
+    UIImage *image = [UIImage imageWithContentsOfFile:PCAImagePath];
+    NSArray * itemsToShare = @[shareText, image];
+    
+	
+	UIActivityViewController *controller = [[UIActivityViewController alloc] 
+		initWithActivityItems:itemsToShare 
+		applicationActivities:nil];
+
+	[self presentActivityController:controller];
+}
+
+
+- (void)presentActivityController:(UIActivityViewController *)controller {
+    
+    // for iPad: make the presentation a Popover
+    controller.modalPresentationStyle = UIModalPresentationPopover;
+    [self presentViewController:controller animated:YES completion:nil];
+    
+    UIPopoverPresentationController *popController = [controller popoverPresentationController];
+    popController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    popController.barButtonItem = self.navigationItem.rightBarButtonItem;
+
+	controller.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *error) {
+        // react to the completion
+        if (completed) {
+            
+            // user shared an item
+		os_log(OS_LOG_DEFAULT, "アクティビティタイプを使用しました%@", activityType);
+            NSLog(@"We used activity type%@", activityType);
+            
+        } else {
+            
+            // user cancelled
+		os_log(OS_LOG_DEFAULT, "結局、何も共有したくありませんでした。");
+            NSLog(@"We didn't want to share anything after all.");
+        }
+        
+        if (error) {
+		os_log(OS_LOG_DEFAULT, "エラーが発生した: %@, %@", error.localizedDescription, error.localizedFailureReason);
+            NSLog(@"An Error occured: %@, %@", error.localizedDescription, error.localizedFailureReason);
+        }
+    };
+ 
+}
+
 
 - (NSString  *)getUUID {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];

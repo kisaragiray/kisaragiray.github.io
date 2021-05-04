@@ -1,13 +1,27 @@
 #import <JBBulletinManager/JBBulletinManager.h>
 #import <libnotifications/libnotifications.h>
-#import "test.h"
+#import <Foundation/Foundation.h>
+#include <dlfcn.h> 
+#import <objc/runtime.h>
+#import <notify.h>
 
-F
-DL
-O
-N
+#define Sound_Path(Sound_Name) @"/System/Library/Audio/UISounds/" #Sound_Name
 
-ABC
-D
-C
+void respaddpreflibbulletinnoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
+	[[%c(JBBulletinManager) sharedInstance] 
+		showBulletinWithTitle:@"libbulletin" 
+		message:@"libbulletin" 
+		bundleID:@"com.mikiyan1978.alertapp" 
+		soundPath:Sound_Path(payment_success.caf)];
+
+}
+
+%dtor{
+	CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CFSTR("com.mikiyan1978.respaddpreflibbulletinnoti"), NULL);
+}
+
+%ctor{
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)respaddpreflibbulletinnoti, CFSTR("com.mikiyan1978.respaddpreflibbulletinnoti"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+
+}

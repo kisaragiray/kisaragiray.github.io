@@ -1,10 +1,16 @@
-@import UIKit;
+#import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
+#import <Preferences/PSListItemsController.h>
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
+#import "UIImage+Scale.h"
+#import <os/log.h>
+#import <spawn.h>
+//@import UIKit;
 @import WebKit;
 
-#define W [UIScreen mainScreen].bounds.size.width
-#define H [UIScreen mainScreen].bounds.size.height
-
-@interface HelpViewController : UIViewController
-@property (nonatomic, retain) UIWindow *HVwindow;
+@interface HelpViewController : PSListController<UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@property (nonatomic, retain) UICollectionView *collectionView;
+- (void)_openTwitterForUser:(NSString*)username;
 @end
 

@@ -2,6 +2,7 @@
 #import "XXRootViewController.h"
 #import "SettingViewController.h"
 #import "HelpViewController.h"
+#import "SceneKitView.h"
 #import <libpowercontroller/powercontroller.h>
 
 /*@interface XXRootAppApplication : UIViewController
@@ -16,49 +17,40 @@
 @implementation XXAppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	UITabBarController *tabBars = [UITabBarController new];
+	NSMutableArray *localViewControllersArray = [[NSMutableArray alloc] initWithCapacity:1];
+
 	_window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_rootViewController = [[XXRootViewController alloc] init];
-	_window.rootViewController = _rootViewController;
+	_rootViewController = [[UINavigationController alloc] initWithRootViewController:[[XXRootViewController alloc] init]];
 
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_rootViewController];
+	_rootViewController.tabBarItem.image=[UIImage imageNamed:@"home.png"];
+	_rootViewController.tabBarItem.title = @"HOME";
 
-	self.window.rootViewController = navigationController;
-	
-	[navigationController 
-		setToolbarHidden:NO 
-		animated:YES];
+	_helpView = [[UINavigationController alloc] initWithRootViewController:[HelpViewController new]];
+	_helpView.tabBarItem.image=[UIImage imageNamed:@"help.png"];
+    _helpView.tabBarItem.title = @"HELP";
 
-	self.tabBarController = [UITabBarController new];
+	//_settingView = [[UINavigationController alloc] initWithRootViewController:[SettingViewController new]];
+	//_settingView.tabBarItem.image=[UIImage imageNamed:@"settings.png"];
+	//_settingView.tabBarItem.title = @"設定";
 
-	XXRootViewController  *homeView  = [XXRootViewController new];
-	SettingViewController  *settingView  = [SettingViewController new];
-	HelpViewController  *helpView  = [HelpViewController new];
+	//_SceneKitview = [[UINavigationController alloc] initWithRootViewController:[SceneKitView new]];
+	//_SceneKitview.tabBarItem.image=[UIImage imageNamed:@"SceneKitview.png"];
+	//_SceneKitview.tabBarItem.title = @"SceneKitview";
 
-	homeView.title = @"Home";
-	settingView.title = @"設定";
-	helpView.title = @"Help";
 
-	[[UITabBarItem appearance] 
-		setTitleTextAttributes:[NSDictionary 
-		dictionaryWithObjectsAndKeys:[UIColor redColor], NSForegroundColorAttributeName, nil] 
-		forState:UIControlStateNormal];
+	[localViewControllersArray 
+		addObject:_rootViewController];
 
-	[[UITabBarItem appearance] 
-		setTitlePositionAdjustment:UIOffsetMake(0, 0)];
+	//[localViewControllersArray addObject:_settingView];
+	//[localViewControllersArray addObject:_SceneKitview];
+	[localViewControllersArray addObject:_helpView];
 
-	NSArray *items = [NSArray 
-		arrayWithObjects:
-		settingView, 
-		homeView, 
-		helpView, nil];
+	tabBars.viewControllers = localViewControllersArray;
+	tabBars.view.autoresizingMask=(UIViewAutoresizingFlexibleHeight);    
 
-	self.tabBarController.viewControllers = items;
-
-	_window.rootViewController = self.tabBarController;
-	[_window addSubview:self.tabBarController.view];
+	_window.rootViewController = tabBars;
 	[_window makeKeyAndVisible];
-
-	[self ShortcutItem];
 }
 
 - (void)ShortcutItem {
@@ -69,7 +61,7 @@
 	UIApplicationShortcutItem *item1 = [[UIApplicationShortcutItem alloc] 
 		initWithType:@"Respring" 
 		localizedTitle:@"PowerControllerApp" 
-		localizedSubtitle:@"Respringします" 
+		localizedSubtitle:@"Respring" 
 		icon:respringIcon 
 		userInfo:nil];
 
@@ -123,4 +115,31 @@
 		notify_post("com.mikiyan1978.alertapplibbulletinuicachenoti");
 	}
 }
+
+- (void)initNotic {
+
+	[[NSNotificationCenter defaultCenter] 
+		addObserver:self 
+		selector:@selector(applicationDidBecomeActive) 
+		name:UIApplicationDidBecomeActiveNotification 
+		object:nil];
+
+	[[NSNotificationCenter defaultCenter] 
+		addObserver:self 
+		selector:@selector(applicationWillResignActive) 
+		name:UIApplicationWillResignActiveNotification 
+		object:nil];
+}
+
+- (void)applicationDidBecomeActive {
+	// Activeになった時の処理.
+	notify_post("com.mikiyan1978.activenoti");
+}
+
+- (void)applicationWillResignActive {
+	// Activeでなくなる時の処理.
+	notify_post("com.mikiyan1978.noactivenoti");
+}
+
+
 @end

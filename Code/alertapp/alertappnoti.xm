@@ -4,8 +4,7 @@
 #import <JBBulletinManager/JBBulletinManager.h>
 #import <libnotifications/libnotifications.h>
 #import <libpowercontroller/powercontroller.h>
-#import <NSTask/NSTask.h>
-#import <huptimeAlert.h>
+//#import <NSTask/NSTask.h>
 
 NSString *soundPath = @"/System/Library/Audio/UISounds/tweet_sent.caf";
 
@@ -68,6 +67,28 @@ static void alertappsbreload(CFNotificationCenterRef center, void *observer, CFS
 	[task launch];
 }
 
+static void activeNoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[[%c(JBBulletinManager) sharedInstance] 
+		showBulletinWithTitle:@"ApplicationDidBecomeActive" 
+		message:@"アプリが起動しました" 
+		bundleID:@"com.mikiyan1978.alertapp"];
+}
+
+static void noActiveNoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[[%c(JBBulletinManager) sharedInstance] 
+		showBulletinWithTitle:@"ApplicationWillResignActive" 
+		message:@"アプリが閉じられました" 
+		bundleID:@"com.mikiyan1978.alertapp"];
+}
+
+static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	NSTask *task = [NSTask new];
+ 	[task setLaunchPath:@"/bin/sh"];
+	[task setArguments:[NSArray arrayWithObjects:
+		@"-c", 
+		@"launchctl reboot userspace", nil]];
+        [task launch];
+}
 
 %dtor {
 
@@ -90,6 +111,18 @@ static void alertappsbreload(CFNotificationCenterRef center, void *observer, CFS
 	CFNotificationCenterRemoveObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.alertappsbreload"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.activenoti"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.noactivenoti"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.rebootUserspace"), NULL);
 
 }
 
@@ -130,6 +163,24 @@ static void alertappsbreload(CFNotificationCenterRef center, void *observer, CFS
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 		alertappsbreload, 
 		CFSTR("com.mikiyan1978.alertappsbreload"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		activeNoti, 
+		CFSTR("com.mikiyan1978.activenoti"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		noActiveNoti, 
+		CFSTR("com.mikiyan1978.noactivenoti"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		rebootUserspace, 
+		CFSTR("com.mikiyan1978.rebootUserspace"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 }

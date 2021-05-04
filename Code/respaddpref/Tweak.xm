@@ -3,41 +3,42 @@
 #import <libnotifications/libnotifications.h>
 #import <JBBulletinManager/JBBulletinManager.h>
 #import <notify.h>
-#import <huptimeAlert.h>
+#import <NSTask/NSTask.h>
+#import <JGProgressHUD/JGProgressHUD.h>
+
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 @interface UIApplication (Undocumented)
 - (void) launchApplicationWithIdentifier: (NSString*)identifier suspended: (BOOL)suspended;
 @end
 
+@interface SBDisplayItem : NSObject
+@property(nonatomic, copy, readonly)NSString* bundleIdentifier;
+@end
+
+@interface SBMainSwitcherViewController : UIViewController
++ (id)sharedInstance;
+- (id)recentAppLayouts;
+- (BOOL)deleteAppLayoutForDisplayItem:(id)arg1;
+- (void)_removeAppLayout:(id)arg1 forReason:(long long)arg2;
+- (void)_deleteAppLayout:(id)arg1 forReason:(long long)arg2;
+- (void)_deleteAppLayoutsMatchingBundleIdentifier:(id)arg1;
+@end
+
+@interface SBAppLayout : NSObject
+- (id)allItems;
+- (BOOL)containsItemWithBundleIdentifier:(id)arg1;
+@end
+
 @interface PSUIPrefsListController : UIViewController
 @end
 
-@interface BackupController : NSObject
-+ (id)sharedInstance;
-- (id)init;
-- (void)startBackup;
-@end
 
 UIBarButtonItem *btn;
 
 int mainInt;
 NSTimer *timer;
 UIAlertController *alertController;
-
-%hook BackupController
-static BackupController *sharedInstance;
-
-- (id)init {
-	id original = %orig;
-	sharedInstance = original;
-	return original;
-}
-
-%new
-+ (id)sharedInstance {
-	return sharedInstance;
-}
-%end
 
 %hook PSUIPrefsListController
 
@@ -69,8 +70,7 @@ static BackupController *sharedInstance;
 		handler:^(UIAlertAction *action) {
 
 		void *handle = dlopen("/usr/lib/libnotifications.dylib", RTLD_LAZY);
-		if (handle != NULL) {                                      
-
+		if (handle != NULL) {
 		NSString *uid = [[NSUUID UUID] UUIDString];
 
 		[%c(CPNotification) 
@@ -98,26 +98,29 @@ static BackupController *sharedInstance;
 		}]];
 
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"uptimeAlert"
+		actionWithTitle:@"HUD"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
-		uptimeAlert(self);
+
+    JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+    HUD.indicatorView = [[JGProgressHUDRingIndicatorView alloc] init]; 
+    HUD.progress = 0.5f;
+    [HUD showInView:self.view];
+    [HUD dismissAfterDelay:3.0];
+
 		}]];
 
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"タップテスト"
+		actionWithTitle:@"killallapptest"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
 
-		dispatch_after(dispatch_time
-			(DISPATCH_TIME_NOW, 
-			(int64_t)(5.0 * NSEC_PER_SEC)), 
-			dispatch_get_main_queue(), ^{
+		SBMainSwitcherViewController* mainSwitcher = [%c(SBMainSwitcherViewController) sharedInstance];
 
-			[(BackupController *)[%c(BackupController) 
-				sharedInstance] startBackup];
+		NSArray* items = [mainSwitcher recentAppLayouts];
 
-			});
+		for (SBAppLayout* item in items)
+			[mainSwitcher _removeAppLayout:item forReason:1];
 
 		}]];
 
@@ -125,9 +128,11 @@ static BackupController *sharedInstance;
 		actionWithTitle:@"バックグラウンド起動"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
+
 		[[UIApplication sharedApplication] 
-			launchApplicationWithIdentifier:@"prefs:root=APPLE_ACCOUNT/ICLOUD_SERVICE/BACKUP" 
+			launchApplicationWithIdentifier:@"jp.naver.line" 
 			suspended:YES];
+
 		}]];
 
 	//キャンセル
@@ -141,5 +146,5 @@ static BackupController *sharedInstance;
 		completion:nil];
 
 }
-
 %end
+

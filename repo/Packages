@@ -2058,6 +2058,22 @@ Description: アイコンをタップするとRespringします
 Name: Respring App
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.ringtonesbackupd
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Depends: rsync
+Filename: ./debs/com.mikiyan1978.ringtonesbackupd_1.0_iphoneos-arm.deb
+Size: 1260
+MD5sum: 2baf497f6179adf659687c50e523bbda
+SHA1: bed7c35d6bf83d5d9a7cf8e6833e4699a6de6c90
+SHA256: 4a401fed929f39b7db2ef5c8fcf8d25021e19eb23060ca08120c848c65a02bd9
+SHA512: 4c6f039eb9834716032e7c3ab1b1e7c00342125a08b1e08e72b02bc854c2299b3a59b4b03a541025e9113122693c7af4ecce9aadbec796816b28a131abfc25f7
+Description: Ringtones for Backup
+Name: Ringtones for Backup
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.safariactionmenu
 Architecture: iphoneos-arm
 Version: 1.0-1
@@ -2205,6 +2221,22 @@ SHA256: 7151d7435dfb32f8918070b3bbbf52cf23ab6d26adc39ce15d45e4c1930398a1
 SHA512: 12c5fe468b381c76e56bad72c999d4b209f89a130f3edcd1f3006792d05ee31429d1089d64329607eb321856a9eb728852b695fa5b0b817c2bc0fd8b516bd01e
 Description: TWICE – Fanfare 着信音
 Name: TWICE Ringtones
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
+Package: com.mikiyan1978.yoasobi
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Ringtones
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Depends: com.twickd.zeph.toneenabler13
+Filename: ./debs/com.mikiyan1978.yoasobi_1.0_iphoneos-arm.deb
+Size: 23127650
+MD5sum: fb1ea5f69e32e30799cc6d28cc952b1a
+SHA1: d8659061de6d398cefe5c84928ab752ace7992de
+SHA256: 61bdd72fd64947f9c376be0443c60c87b3fdebdf9900fdc784571a61262af95b
+SHA512: bc60c5a51d0e12b3a515769024803b5f2c33c83ed0320d7d504c18787d88cde0a135a36715f4eb868983d0bdda8acf77b4cd0f62d48150258120aa05e6a7adac
+Description: ヨアソビ着信音
+Name: YOASOBI Ringtones
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
 Package: com.mikiyan1978.yoasobi
@@ -2908,6 +2940,23 @@ Description: Install theos and setup everything you need with one click! Works o
 Tag: role::hacker
 Name: Theos Installer 2 (unc0ver and checkra1n)
 Author: Jake James
+
+Package: net.limneos.libbulletin
+Architecture: iphoneos-arm
+Version: 0.1-158
+Section: Tweaks
+Maintainer: Elias Limneos
+Installed-Size: 332
+Depends: mobilesubstrate
+Filename: ./debs/net.limneos.libbulletin_0.1-158_iphoneos-arm.deb
+Size: 36280
+MD5sum: a6ee69831619fb1fb8cc3d2bc8d93232
+SHA1: 7fc7c9619954927010cefd667533cd6dcc48e9e2
+SHA256: 356f59c842d5110e1e5579a2a9f186ca1c668772e454efaa958e16556503a9f7
+SHA512: dd8cbc3422bd676ab7b7c92d9f2e647acfba76c187c0d9efba68260c508d33a90d4b98e7b66e178650ddb0d6e728f01716aadcf2e63a79fda77d20564fe4bba9
+Description: Simple library that displays bulletins
+Name: libbulletin
+Author: Elias Limneos
 
 Package: net.midkin.smartvolumecontrol2
 Architecture: iphoneos-arm
