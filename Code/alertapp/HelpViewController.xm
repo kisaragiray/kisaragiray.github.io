@@ -48,7 +48,8 @@
 		@"toko", 
 		@"saya", 
 		@"yumiko"];
-    
+
+notify_post("com.mikiyan1978.siri");
 }
 
 /*
@@ -296,5 +297,7 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
 	return CGSizeMake(50, 50);
 }
+
+
 
 @end

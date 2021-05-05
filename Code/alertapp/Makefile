@@ -3,7 +3,7 @@ THEOS_DEVICE_IP = 127.0.0.1
 ARCHS = arm64 arm64e
 TARGET = iphone:clang:latest:14.0
 INSTALL_TARGET_PROCESSES = SpringBoard
-FINALPACKAGE=0
+FINALPACKAGE=1
 DEBUG = 1
 
 include $(THEOS)/makefiles/common.mk
@@ -34,7 +34,10 @@ $(APPLICATION_NAME)_LDFLAGS = -lMobileGestalt
 $(APPLICATION_NAME)_LIBRARIES = powercontroller
 $(APPLICATION_NAME)_EXTRA_FRAMEWORKS += Cephei
 $(APPLICATION_NAME)_PRIVATE_FRAMEWORKS = Preferences
-$(APPLICATION_NAME)_CFLAGS += -I$(THEOS)/include/WHToast -Wno-error=unused-variable -Wno-error=unused-function -DTHEOS_LEAN_AND_MEAN
+$(APPLICATION_NAME)_CFLAGS += \
+	-I$(THEOS)/include/WHToast \
+	#-Wno-error=unused-variable \
+	#-Wno-error=unused-function
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 TWEAK_NAME = alertappnoti
@@ -47,5 +50,16 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 after-stage::
 	$(ECHO_NOTHING)chmod 06755 $(THEOS_STAGING_DIR)/Applications/$(APPLICATION_NAME).app/$(APPLICATION_NAME) $(ECHO_END)
 
+before-install::
+	install.exec "touch /mikiyan1978.no-postinst-notification"
+
+after-install::
+	install.exec "rm -v /mikiyan1978.no-postinst-notification"
+
+
+after-install::
+	#@rm -f $(THEOS_BUILD_DIR)/packages/*.deb
+
 SUBPROJECTS += alertapppref
+SUBPROJECTS += pkg-actions
 include $(THEOS_MAKE_PATH)/aggregate.mk

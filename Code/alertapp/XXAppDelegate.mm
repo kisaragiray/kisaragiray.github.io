@@ -5,15 +5,6 @@
 #import "SceneKitView.h"
 #import <libpowercontroller/powercontroller.h>
 
-/*@interface XXRootAppApplication : UIViewController
-@end
-
-@interface SettingViewController : UIViewController
-@end
-
-@interface HelpViewController : UIViewController
-@end*/
-
 @implementation XXAppDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {

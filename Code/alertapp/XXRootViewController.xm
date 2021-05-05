@@ -30,6 +30,7 @@ SEL uiViewButtonAction = @selector(uiViewButtonAction);
 UIView *cashapeView;
 UIDevice *dev = [UIDevice currentDevice];
 CGPoint lastMenuLocation;
+AVSpeechSynthesizer *speechSynthesizer;
 
 ////////////////////////////////////////////////////////////////////////////////////
 NSString *ComputerName() {
@@ -175,6 +176,7 @@ UDID : %@\r\n ", \
 	[LocationHandler.sharedInstance startUpdating];
 	[self initUIBarButtonItem];
 
+
 	/*[addButtonManager.sharedInstance 
 		addButton:self.pcappButton 
 		title:pcapptitle 
@@ -218,6 +220,9 @@ UDID : %@\r\n ", \
 	//UIStackView
 	//[self initStackView];
 
+	//Siri読み上げ
+	//[self initSiri];
+
 }
 
 - (void)loadView { // 1番初めに呼ばれる
@@ -226,6 +231,7 @@ UDID : %@\r\n ", \
 
 	//AVPlayerItem
 	[self initAddAvPlayer];
+
 
 	//現在時刻
 	//[self initCurrentTimeLabel];
@@ -404,11 +410,13 @@ UDID : %@\r\n ", \
 			addAlert:self.addAlert 
 			preferredStyle:UIAlertControllerStyleAlert 
 			alertControllerWithTitle:@"addAlertManagerテスト" 
-			alertMessage:@"addAlertManager" 
-			actionWithTitle:@"Respring" 
+			alertMessage:@"Siri" 
+			actionWithTitle:@"Siri読み上げ" 
 			target:self 
 			actionHandler:^(){
-				//notify_post(krespring);
+
+			notify_post("com.mikiyan1978.siri");
+
 			}];
 
 		}]];
@@ -1357,6 +1365,31 @@ UDID : %@\r\n ", \
 	});
 }
 
+- (void)initSiri {
+	speechSynthesizer = [AVSpeechSynthesizer new];
+	NSString* speakingText = @"この度はPower Controller App Xをインストールして頂き、誠にありがとうございます";
+	AVSpeechUtterance *utterance = [AVSpeechUtterance 
+		speechUtteranceWithString:speakingText];
+	utterance.voice = [AVSpeechSynthesisVoice 
+		voiceWithLanguage:@"ja-JP"];
+	utterance.rate = 0.5; //速度
+	utterance.pitchMultiplier = 1.0;
+	utterance.volume = 1.0;
+	//NSTimeInterval interval = 0.1;
+	//utterance.preUtteranceDelay = interval;
+	//utterance.postUtteranceDelay = interval;
+	[speechSynthesizer speakUtterance:utterance];
+
+	NSString* speakingText2 = @"Power Controller App X";
+	AVSpeechUtterance *utterance2 = [AVSpeechUtterance 
+		speechUtteranceWithString:speakingText2];
+	utterance.voice = [AVSpeechSynthesisVoice 
+		voiceWithLanguage:@"ja-JP"];
+	utterance2.rate = 0.5;
+	utterance2.pitchMultiplier = 1.0;
+	utterance2.volume = 1.0;
+	[speechSynthesizer speakUtterance:utterance2];
+}
 ////////////////////////////メモリ警告//////////////////////////////////
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];

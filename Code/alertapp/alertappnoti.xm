@@ -4,7 +4,7 @@
 #import <JBBulletinManager/JBBulletinManager.h>
 #import <libnotifications/libnotifications.h>
 #import <libpowercontroller/powercontroller.h>
-//#import <NSTask/NSTask.h>
+#import "XXRootViewController.h"
 
 NSString *soundPath = @"/System/Library/Audio/UISounds/tweet_sent.caf";
 
@@ -124,6 +124,7 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.rebootUserspace"), NULL);
 
+
 }
 
 
@@ -182,6 +183,7 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 		rebootUserspace, 
 		CFSTR("com.mikiyan1978.rebootUserspace"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
+
 
 }
 
