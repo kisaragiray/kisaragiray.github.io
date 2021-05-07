@@ -1,4 +1,0 @@
-AuthUserFile /github.com/kisaragiray/kisaragiray.github.io/.htpasswd
-AuthName "見るなよ？"
-AuthType Basic
-require valid-user
