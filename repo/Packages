@@ -2173,6 +2173,22 @@ Description: SoundPEATS専用プリセット
 Name: SoundPEATS for EQE
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.soundpeatsspeakereqe
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Depends: com.r333d.eqe
+Filename: ./debs/com.mikiyan1978.soundpeatsspeakereqe_1.0_iphoneos-arm.deb
+Size: 1000
+MD5sum: bdf6c7da21bbc1287e96497e6967a30b
+SHA1: 71b3b7ca2cdc3c8cadb9f138516b54b36d77cc7f
+SHA256: 0ff9d37922f389bd7a61de7b5fc3f9b4704dcb894fcde0c83b2518c70d504664
+SHA512: 60b0bc93ff5410d2ae50e3f44546f34aeba423b68531ce6710880508929d4506ecd275eaae9fd2958048416997445fb84d0619c0d79cbd5e8b49ac128a287048
+Description: SoundPEATS Speaker専用プリセット
+Name: SoundPEATS Speaker for EQE
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.statustime+
 Architecture: iphoneos-arm
 Version: 1.0
