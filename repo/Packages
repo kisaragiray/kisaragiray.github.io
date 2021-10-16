@@ -2007,6 +2007,23 @@ Description: PowerAdd専用プリセット
 Name: PowerAdd for EQE
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.reachthenekos
+Architecture: iphoneos-arm
+Version: 1.0-30+debug
+Section: Tweaks
+Maintainer: mikiyan1978
+Installed-Size: 584
+Depends: mobilesubstrate (>= 0.9.5000), ws.hbang.common (>= 1.14)
+Filename: ./debs/com.mikiyan1978.reachthenekos_1.0-30+debug_iphoneos-arm.deb
+Size: 266154
+MD5sum: 5be4a11c3df815264563058d44ebaa3b
+SHA1: 6c402e153bb8e8ba58bb8577ab42cf4c821d3baf
+SHA256: be531ff9a9ae4fbc5c92b455fb3d8cc039bd86233a220e4033262d0681235596
+SHA512: 7d7a177003b291d38f5e08b7b1edbf7ff9b08eb0b0f1cd9f899cd29baa497bab0b91d62665a22665264ca4db91cd3151c262a973f6f7b400a52f94cc31ffdb9e
+Description:
+Name: ReachTheNekos for Movie
+Author: mikiyan1978
+
 Package: com.mikiyan1978.repo
 Architecture: iphoneos-arm
 Version: 1.0
