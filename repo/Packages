@@ -2024,6 +2024,23 @@ Description:
 Name: ReachTheNekos for Movie
 Author: mikiyan1978
 
+Package: com.mikiyan1978.reachthenekos
+Architecture: iphoneos-arm
+Version: 2.0+debug
+Section: Tweaks
+Maintainer: mikiyan1978
+Installed-Size: 584
+Depends: mobilesubstrate (>= 0.9.5000)
+Filename: ./debs/com.mikiyan1978.reachthenekos_2.0+debug_iphoneos-arm.deb
+Size: 262650
+MD5sum: f1e5b6f24d255ce0965da7939c84c552
+SHA1: 13fe4b874a5860f4acef5cde2d1e5c6c8f932132
+SHA256: 186168a5faa3cb782e6df48210e5b47a509d100dc7345274c91987bcaf63e666
+SHA512: 49f6b23161d4ce62c7701bd9ab296741e437deabde823fc4899ba3dafb2734f55cd374093bd3b4ae48d214857613993138790f6d583d6f612409f294b0f83e0f
+Description:
+Name: ReachTheNekos for Movie
+Author: mikiyan1978
+
 Package: com.mikiyan1978.repo
 Architecture: iphoneos-arm
 Version: 1.0
