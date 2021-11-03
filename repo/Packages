@@ -3092,6 +3092,24 @@ Description: secure remote access between machines
 Name: OpenSSH
 Depiction: http://cydia.saurik.com/info/openssh/
 
+Package: org.coolstar.sileobeta
+Architecture: iphoneos-arm
+Version: 2.2+20210815.1629060205.2325838
+Section: Packaging
+Maintainer: Hayden Seay <me@diatr.us>
+Depends: firmware (>= 12.0), firmware (>= 12.2) | org.swift.libswift (>= 5.0), coreutils (>= 8.31-1), dpkg (>= 1.19.7-2), apt (>= 1.8.2), libzstd1
+Filename: ./debs/org.coolstar.sileobeta_2.2+20210815.1629060205.2325838_iphoneos-arm.deb
+Size: 2873248
+MD5sum: ecbe477701aab624db22f1ca2bcbd71b
+SHA1: be3a21aa499c3e40ada2d972e50846e9c01e9810
+SHA256: 657b00a2c7bb0b9fcf54ad94b2c32ba7613e2c9f0ed1d74507ae10ecab50f427
+SHA512: 460c246d3921c0b43b2438c1679922cef2d442f05e0e4f839b8d1e3873d8de64e75b1777e25849b3dda1c991727df2b167fd2add29449d5ec235a2bb79a4ef96
+Description: A modern APT package manager frontend
+Name: Sileo (Beta Channel)
+Author: Sileo Team <getsileoapp@gmail.com>
+Icon: https://getsileo.app/img/icon.png
+SileoDepiction: https://featuredpage.getsileo.app/depiction.json
+
 Package: org.thebigboss.swipeformore
 Architecture: iphoneos-arm
 Version: 1.1.10
