@@ -2273,6 +2273,24 @@ Description: TWICE – Fanfare 着信音
 Name: TWICE Ringtones
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.uncar
+Architecture: iphoneos-arm
+Version: 1.0
+Section: System
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Installed-Size: 132
+Depends:
+Filename: ./debs/com.mikiyan1978.uncar_1.0_iphoneos-arm.deb
+Size: 8518
+MD5sum: 607ec495fc8654506af0dbc32a28f4b0
+SHA1: 29a9dabcfc7ac742a27d8292813d9f5319e51719
+SHA256: 67470c19d5d580c188b928ca0734ea9c575e961c7eb725dc0503328e6009a0bf
+SHA512: 5377d89f673acb038fb8a5857150893a63e3546813878294b5e10eed76a6eaf92069a4180a8345d5f24c331fcb6886b0e3b68ee03a761fddb5c8b138d3c8597d
+Description: Extract Asset.car files from bundles
+Tag: role::hacker
+Name: uncar
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.yoasobi
 Architecture: iphoneos-arm
 Version: 1.0
