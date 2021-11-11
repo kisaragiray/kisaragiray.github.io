@@ -5,6 +5,7 @@
 #import "DataSaveHelper.h"
 #import <os/log.h>
 #import <HBLog.h>
+#import <LikeButton/LikeButton.h>
 
 //#define W [UIScreen mainScreen].bounds.size.width
 //#define H [UIScreen mainScreen].bounds.size.height
@@ -16,12 +17,21 @@ DataSaveHelper *helper;
 @implementation SceneKitView
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-	[self initHelper];
+	[super viewDidLoad];
+
 	self.view = [[UIView alloc] 
 		initWithFrame:[UIScreen mainScreen].bounds];
-	self.view.backgroundColor = [UIColor cyanColor];
+	self.view.backgroundColor = [UIColor clearColor];
 
+	[self initCAGLayer];
+	[self initTF];
+	[self initHelper];
+	[self initLabel];
+	[self initLikeButton];
+
+}
+
+- (void)initTF {
 	tf = [[UITextField alloc] 
 		initWithFrame:CGRectMake(W / 2 - 150, H - 100, 300, 30)];
 
@@ -38,7 +48,6 @@ DataSaveHelper *helper;
 		forControlEvents:UIControlEventEditingDidEndOnExit];
 
 	[self.view addSubview:tf];
-	[self initLabel];
 
 	[NSNotificationCenter.defaultCenter 
 		addObserver:self 
@@ -51,7 +60,6 @@ DataSaveHelper *helper;
 		selector:@selector(slideDownView:) 
 		name:UIKeyboardWillHideNotification 
 		object:nil];
-
 }
 
 - (void)hoge:(UITextField*)textfield{
@@ -60,27 +68,39 @@ DataSaveHelper *helper;
 
 - (void)initLabel {
 	label = [[UILabel alloc] 
-		initWithFrame:CGRectMake(0, H / 6, W, 30)];
+		initWithFrame:CGRectMake(
+			0, 
+			H / 8 - 15, 
+			W, 
+			30)];
 	label.text = [NSString stringWithFormat:@"起動回数 : %ld 回", helper.howManyTimesAppLaunched];
 	label.textAlignment = NSTextAlignmentCenter;
 
-	label.textColor = [UIColor redColor];
-	[label setFont:[UIFont boldSystemFontOfSize:30]];
+	label.textColor = [UIColor whiteColor];
+	[label setFont:[UIFont boldSystemFontOfSize:25]];
 	[self.view addSubview:label];
 }
 
 - (void)slideUpView:(NSNotification*)notification {
 	HBLogDebug(@" = %@", label.text);
 
-	os_log(OS_LOG_DEFAULT, "上にあがりました❗️");
+	os_log(OS_LOG_DEFAULT, "上にあがりました");
 
 	AudioServicesPlaySystemSound(1003);
 
-	tf.frame = CGRectMake(W / 2 - 150, H / 2 + 100, 300, 30);
+	tf.frame = CGRectMake(
+		W / 2 - 150, 
+		H / 2 + 80, 
+		300, 
+		30);
 }
 
 - (void)slideDownView:(NSNotification*)notification {
-	tf.frame = CGRectMake(W / 2 - 150, H - 100, 300, 30);
+	tf.frame = CGRectMake(
+		W / 2 - 150, 
+		H - 100, 
+		300, 
+		30);
 }
 
 - (void)initHelper {
@@ -103,6 +123,59 @@ DataSaveHelper *helper;
 		[self.view endEditing:YES];
 	} else {
 		[tf becomeFirstResponder];
+	}
+}
+
+- (void)initCAGLayer {
+	UIView* view = [[UIView alloc] 
+		initWithFrame:[UIScreen mainScreen].bounds];
+
+	CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+	gradientLayer.frame = self.view.bounds;
+	gradientLayer.colors = @[
+		(id)RGBA(48.0, 35.0, 174.0, 1.0).CGColor, 
+		(id)RGBA(200, 110, 215.0, 1.0).CGColor];
+
+	/*gradientLayer.locations = @[
+		@0, 
+		@0.1, 
+		@0.6, 
+		@0.7, 
+		@1];*/
+
+	//gradientLayer.startPoint = CGPointMake(0, 0);
+	//gradientLayer.endPoint = CGPointMake(1, 0);
+
+	[view.layer insertSublayer:gradientLayer atIndex:0];
+	[self.view addSubview:view];
+}
+
+- (void)initLikeButton {
+    
+	LikeButton * btn = [LikeButton buttonWithType:UIButtonTypeCustom];
+
+	btn.frame = CGRectMake(100, 100, 30, 130);
+	[self.view addSubview:btn];
+
+	[btn setImage:[UIImage 
+		imageNamed:@"dislike"] 
+		forState:UIControlStateNormal];
+
+	[btn setImage:[UIImage 
+		imageNamed:@"liek_orange"] 
+		forState:UIControlStateSelected];
+
+	[btn addTarget:self 
+		action:@selector(btnClick:) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+}
+
+- (void)btnClick:(UIButton *)button {
+	if (!button.selected) {
+		button.selected = !button.selected;
+	} else {
+		button.selected = !button.selected;
 	}
 }
 @end

@@ -1,9 +1,9 @@
 Package: com.mikiyan1978.alertapp
 Name: PowerControllerApp 14
-Version: 499999999999999.0
-Depends: mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.14), net.limneos.libbulletin
+Version: 2021.11.04
+Depends: mobilesubstrate, preferenceloader, net.limneos.libbulletin
 Architecture: iphoneos-arm
-Description: Respring、uicache、セーフモード、消してしまったCydiaのインストールなどが行えます。
+Description: Respring、uicache、セーフモード他。
 Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 Section: Utilities

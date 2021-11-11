@@ -1,0 +1,3 @@
+@interface SnowView : CAEmitterLayerView
+
+@end

@@ -1,4 +1,2 @@
-//@import UIKit;
-
-@interface SettingViewController : UIViewController
+@interface SettingViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource>
 @end

@@ -1,16 +1,10 @@
-#import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
-#import <Preferences/PSListItemsController.h>
-#import <MessageUI/MessageUI.h>
-#import <MessageUI/MFMailComposeViewController.h>
 #import "UIImage+Scale.h"
-#import <os/log.h>
-#import <spawn.h>
-//@import UIKit;
-@import WebKit;
+#import <AutoScrollLabel/CBAutoScrollLabel.h>
 
-@interface HelpViewController : PSListController<UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface HelpViewController : PSListController<UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate>
 @property (nonatomic, retain) UICollectionView *collectionView;
-- (void)_openTwitterForUser:(NSString*)username;
-@end
+@property (nonatomic, strong) UIImageView *headImageView;
+@property (nonatomic, retain) CBAutoScrollLabel *autoScrollLabel;
 
+- (void)openTwitterForUser:(NSString*)username;
+@end

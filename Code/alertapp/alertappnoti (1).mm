@@ -1,0 +1,1 @@
+/var/root/ios12THEOS/alertapp/alertappnoti.xm

@@ -1,0 +1,10 @@
+Package: com.mikiyan1978.alertapp
+Name: PowerControllerApp 14
+Depends: mobilesubstrate, preferenceloader, net.limneos.libbulletin
+Architecture: iphoneos-arm
+Description: Respring、uicache、セーフモード他。
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+Section: Utilities
+Version: 2021.11.04
+Installed-Size: 4016

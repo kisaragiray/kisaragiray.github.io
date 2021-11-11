@@ -7,9 +7,11 @@ BUNDLE_NAME = alertapppref
 
 $(BUNDLE_NAME)_FILES = XXXRootListController.mm
 $(BUNDLE_NAME)_FRAMEWORKS = UIKit
-$(BUNDLE_NAME)_PRIVATE_FRAMEWORKS = Preferences
+$(BUNDLE_NAME)_PRIVATE_FRAMEWORKS = \
+	Preferences \
+	BackBoardServices
 $(BUNDLE_NAME)_INSTALL_PATH = /Library/PreferenceBundles
-$(BUNDLE_NAME)_EXTRA_FRAMEWORKS = Cephei CepheiPrefs
+$(BUNDLE_NAME)_EXTRA_FRAMEWORKS = Cephei CepheiPrefs AltList
 $(BUNDLE_NAME)_LIBRARIES = powercontroller
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 

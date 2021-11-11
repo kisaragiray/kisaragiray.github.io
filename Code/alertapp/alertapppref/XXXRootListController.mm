@@ -1,6 +1,11 @@
 #include "XXXRootListController.h"
 #import <libpowercontroller/powercontroller.h>
 #import <kblurRespring.h>
+#import <AltList/AltList.h>
+
+extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *bundleID, int reasonID, bool report, NSString *description);
+
+#define KILL_APP BKSTerminateApplicationForReasonAndReportWithDescription(@"com.mikiyan1978.alertapp", 5, false, NULL);
 
 @implementation XXXRootListController
 
@@ -27,8 +32,6 @@
 */
 
 - (void)apply {
-	blurRespring(self, self.view, 3);
-	//notify_post(kFancyRespring);
-	//notify_post(krespring);
+	KILL_APP
 }
 @end

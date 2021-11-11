@@ -1,20 +1,19 @@
 #import "XXRootViewController.h"
 #import "HelpViewController.h"
 #import "SettingViewController.h"
+#import <Cephei/HBPreferences.h>
 #import <libpowercontroller/powercontroller.h>
 #import <kaddAvPlayer.h>
 #import <kActivityIndicator.h>
 #import <kaddprogressView.h>
 #import <kaddNotificationCenter.h>
 #import "LEDSwitch.h"
-#import "MobileGestalt.h"
-#import <SCLAlertView/SCLAlertView.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import <CoreTelephony/CTCarrier.h>
+#import "SnowView.h"
 
-#define PCAImagePath @"/Applications/PowerControllerApp.app/AppIcon29x29@2x.png"
-
-NSString *avUrl;
+static NSString *avUrl;
+id playbackObserver;
+CMTime currentT;
+#define kTimeScale 60.0
 NSString *pcAppmessage = @"Respring\n uicache\n セーフモード\n reboot\n Cydiaインストール";
 NSString *pcapptitle = @"🥺PowerControllerApp🥺";
 SEL pcappAction = @selector(tapbt);
@@ -28,11 +27,19 @@ SEL tapButton = @selector(tappedButton:);
 NSString *uiViewButtonTitle = @"テストボタン";
 SEL uiViewButtonAction = @selector(uiViewButtonAction);
 UIView *cashapeView;
-UIDevice *dev = [UIDevice currentDevice];
 CGPoint lastMenuLocation;
 AVSpeechSynthesizer *speechSynthesizer;
+UIViewController *popController;
 
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+void fileCheck() {
+	if (access("/", F_OK) == -1) {
+		//アクセスできない
+	} else {
+		//アクセスできる
+	}
+}
+
 NSString *ComputerName() {
 	NSString *ComputerName = nil;
 	CFStringRef value = (CFStringRef) MGCopyAnswer(kMGComputerName);
@@ -141,6 +148,8 @@ NSString *UDID() {
 	return UDID;
 }
 
+UIDevice *dev = [UIDevice currentDevice];
+
 NSString *isDeviceInfoStr = [NSString 
 	stringWithFormat:@"\
 User Assigned Device Name : %@\r\n \
@@ -153,7 +162,7 @@ Hardware Platform : %@\r\n \
 CPU Architecture : %@\r\n \
 Chip ID : %@\r\n \
 Battery Current Capacity : %@%%\r\n \
-UDID : %@\r\n ", \
+UDID : %@\r\n", \
 
 		UserAssignedDeviceName(), 
 		ComputerName(), 
@@ -166,38 +175,45 @@ UDID : %@\r\n ", \
 		ChipID(), 
 		BatteryCurrentCapacity(), 
 		UDID()];
-////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 @implementation XXRootViewController
+
+- (void)loadView { // 1番初めに呼ばれる
+	self.view = [[UIView alloc] 
+		initWithFrame:[UIScreen mainScreen].bounds];
+
+	//AVPlayerItem
+	[self initAddAvPlayer];
+
+
+	//現在時刻
+	//[self initCurrentTimeLabel];
+
+	//[self.view layoutIfNeeded];
+
+	//fileCheck();
+
+	[self testSnowAndRain];
+
+	//[self addEmitter];
+
+	[self initVersion];
+
+	//CurrentTimeSlider
+	[self initCurrentTimeSlider];
+	[self initCustomSlider];
+
+}
 
 - (void)viewDidLoad { // loadViewの次に呼ばれ、一度だけ生成される
 	[super viewDidLoad];
 	[LocationHandler.sharedInstance setDelegate:self];
 	[LocationHandler.sharedInstance startUpdating];
+	//[self initUIViewButtonAction];
+	//[self initPCappAction];
 	[self initUIBarButtonItem];
-
-
-	/*[addButtonManager.sharedInstance 
-		addButton:self.pcappButton 
-		title:pcapptitle 
-		delegate:self 
-		action:pcappAction 
-		toItem:self.view 
-		multiplierX:1.0f 
-		constantX:0.0f 
-		multiplierY:0.4f 
-		constantY:0.0f];*/
-
-	/*[addButtonManager.sharedInstance 
-		addButton:self.uiViewButton 
-		title:uiViewButtonTitle 
-		delegate:self 
-		action:uiViewButtonAction 
-		toItem:self.view 
-		multiplierX:1.0f 
-		constantX:0.0f 
-		multiplierY:1.7f 
-		constantY:0.0f];*/
+	[self initControllPanel];
 
 	//加速度センサー
 	//[self initAccelerometer];
@@ -223,20 +239,6 @@ UDID : %@\r\n ", \
 	//Siri読み上げ
 	//[self initSiri];
 
-}
-
-- (void)loadView { // 1番初めに呼ばれる
-	self.view = [[UIView alloc] 
-		initWithFrame:[UIScreen mainScreen].bounds];
-
-	//AVPlayerItem
-	[self initAddAvPlayer];
-
-
-	//現在時刻
-	//[self initCurrentTimeLabel];
-
-	//[self.view layoutIfNeeded];
 
 }
 
@@ -247,7 +249,7 @@ UDID : %@\r\n ", \
 		message:pcAppmessage 
 		preferredStyle:UIAlertControllerStyleActionSheet];
 
-	//Respring////////////////////////////////////////////////////////////////
+	//Respring
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Respring" 
 		style:UIAlertActionStyleDefault 
@@ -255,7 +257,14 @@ UDID : %@\r\n ", \
 		notify_post(krespring);
 		}]];
 
-	//カウントダウンRespring///////////////////////////////////////////
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"sbreload" 
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		notify_post("com.mikiyan1978.sbreload");
+		}]];
+
+	//カウントダウンRespring
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"カウントダウンRespring" 
 		style:UIAlertActionStyleDefault 
@@ -283,7 +292,7 @@ UDID : %@\r\n ", \
 		notify_post(krespring);
 		}]];
 
-	//キャンセル////////////////////////////////////////////////////////////
+	//キャンセル
 	[self.timeralertController addAction:[UIAlertAction 
 		actionWithTitle:@"キャンセル"
 		style:UIAlertActionStyleCancel 
@@ -297,7 +306,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//uicache(通知あり)////////////////////////////////////////////////////
+	//uicache(通知あり)
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"uicache" 
 		style:UIAlertActionStyleDefault 
@@ -309,7 +318,15 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//セーフモード/////////////////////////////////////////////////////////
+	//launchctl reboot userspace
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"userspace reboot" 
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		notify_post("com.mikiyan1978.rebootUserspace");
+		}]];
+
+	//セーフモード
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Substrate Safe Mode" 
 		style:UIAlertActionStyleDefault 
@@ -322,7 +339,7 @@ UDID : %@\r\n ", \
 		actionWithTitle:@"reboot" 
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
-		notify_post(kreboot);
+		//notify_post(kreboot);
 		}]];
 
 	//ldrestart
@@ -333,15 +350,7 @@ UDID : %@\r\n ", \
 		notify_post(klibpowercontrollerldrestart);
 		}]];
 
-	//launchctl reboot userspace
-	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"userspace reboot" 
-		style:UIAlertActionStyleDefault 
-		handler:^(UIAlertAction *action) {
-		notify_post("com.mikiyan1978.rebootUserspace");
-		}]];
-
-	//libnotifications/通知テスト////////////////////////////////////////
+	//libnotifications/通知テスト
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"libnotifications通知" 
 		style:UIAlertActionStyleDefault 
@@ -349,7 +358,7 @@ UDID : %@\r\n ", \
 		notify_post("com.mikiyan1978.alertapplibnotificationsuicachenoti");
 		}]];
 
-	//libbulletin/通知テスト//////////////////////////////////////////////
+	//libbulletin/通知テスト
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"libbulletin通知" 
 		style:UIAlertActionStyleDefault 
@@ -361,7 +370,7 @@ UDID : %@\r\n ", \
 		}
 		}]];
 
-	//UNUserNotificationCenter/通知テスト/////////////////////////
+	//UNUserNotificationCenter/通知テスト
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"UNUserNotificationCenter通知" 
 		style:UIAlertActionStyleDefault 
@@ -369,17 +378,17 @@ UDID : %@\r\n ", \
 		[self UNUserNotificationCenterHandler];
 		}]];
 
-	//schedule/通知テスト////////////////////////////////////////////////
+	//schedule/通知テスト
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"スケジューリング通知" 
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
 
-		addscheduleNotificationCenter(23, 1);
+		addscheduleNotificationCenter(20, 40);
 
 		}]];
 
-	//通知キャンセル//////////////////////////////////////////////////////
+	//通知キャンセル
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"通知キャンセル" 
 		style:UIAlertActionStyleDefault 
@@ -390,17 +399,52 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//CFNotificationCenterPostNotification(sbreload)///////////////
+	//Substitute(F_OK)
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"CFNPostNotification(sbreload)" 
+		actionWithTitle:@"Substitute(F_OK)" 
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
 
-		notify_post("com.mikiyan1978.alertappsbreload");
+		if (access(SUBSTITUTE_PATH, F_OK) == 0) {
+		if (@available(iOS 14, *)) {
+
+		UIAlertController *alert = [UIAlertController 
+			alertControllerWithTitle:@"Substitute確認" 
+			message:@"Substituteがインストールされており、かつiOS14以降である事を確認しました" 
+			preferredStyle:UIAlertControllerStyleAlert];
+
+		[alert addAction:[UIAlertAction 
+			actionWithTitle:@"Cancel"
+			style:UIAlertActionStyleCancel 
+			handler:nil]];
+
+		[self presentViewController:alert 
+			animated:YES 
+			completion:nil];
+
+		}
+
+		} else {
+
+		UIAlertController *alert = [UIAlertController 
+			alertControllerWithTitle:@"Substitute確認" 
+			message:@"Substituteが未インストールかつiOS14以下であることを確認しました" 
+			preferredStyle:UIAlertControllerStyleAlert];
+
+		[alert addAction:[UIAlertAction 
+			actionWithTitle:@"Cancel"
+			style:UIAlertActionStyleCancel 
+			handler:nil]];
+
+		[self presentViewController:alert 
+			animated:YES 
+			completion:nil];
+
+		}
 
 		}]];
 
-	//addAlertManager////////////////////////////////////////////////////
+	//addAlertManager
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"addAlertManager" 
 		style:UIAlertActionStyleDefault 
@@ -421,7 +465,7 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//プログレスバー///////////////////////////////////////////////////////
+	//プログレスバー
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"プログレスバー"
 		style:UIAlertActionStyleDefault 
@@ -437,7 +481,17 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//Device Information//////////////////////////////////////////////////
+	//スクショ
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"スクショ"
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+
+		notify_post("com.mikiyan1978.takeScreenshot");
+
+		}]];
+
+	//Device Information
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"Device Information"
 		style:UIAlertActionStyleDefault 
@@ -459,7 +513,32 @@ UDID : %@\r\n ", \
 
 		}]];
 
-	//キャンセル////////////////////////////////////////////////////////////
+	//画面回転
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"画面回転"
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		notify_post("com.mikiyan1978.lockandunlock");
+		}]];
+
+	//ロック
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"ロック"
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+
+		dispatch_after(dispatch_time 
+			(DISPATCH_TIME_NOW, 
+			(int64_t)(1.0 * NSEC_PER_SEC)), 
+			dispatch_get_main_queue(), ^{
+			notify_post(klock);
+		});
+
+		}]];
+
+//////////////////////////////////////////////////////////////////
+
+	//キャンセル
 	[alert addAction:[UIAlertAction 
 		actionWithTitle:@"キャンセル" 
 		style:UIAlertActionStyleCancel 
@@ -472,7 +551,9 @@ UDID : %@\r\n ", \
 
 #pragma mark - player
 - (void)initAddAvPlayer {
-	addAvPlayer(avUrl, 0.1, self);
+	os_log(OS_LOG_DEFAULT, "再生開始");
+
+	addAvPlayer(avUrl, 1.0, self);
 
 	[NSNotificationCenter.defaultCenter 
 		addObserver:self 
@@ -503,6 +584,288 @@ UDID : %@\r\n ", \
 	[player seekToTime:kCMTimeZero];
 	[player setActionAtItemEnd:AVPlayerActionAtItemEndNone];
 	[player play];
+}
+
+- (void)initControllPanel {
+	UIView *controlView = [[UIView alloc] 
+		initWithFrame:CGRectMake(0, 530, W, 50)];
+
+	controlView.backgroundColor = [UIColor clearColor];
+	controlView.layer.cornerRadius = 13.0;
+	[self.view addSubview:controlView];
+
+	//startImg, stopImg
+	UIView *startImgstopImgview = [UIView new];
+	startImgstopImgview.backgroundColor = [UIColor clearColor];
+	[startImgstopImgview.heightAnchor 
+		constraintEqualToConstant:30].active = true;
+	[startImgstopImgview.widthAnchor 
+		constraintEqualToConstant:30].active = true;
+
+	//backwardImg
+	UIView *backwardImgview = [UIView new];
+	backwardImgview.backgroundColor = [UIColor clearColor];
+	[backwardImgview.heightAnchor 
+		constraintEqualToConstant:30].active = true;
+	[backwardImgview.widthAnchor 
+		constraintEqualToConstant:30].active = true;
+
+	//forwardImg
+	UIView *forwardImgview = [UIView new];
+	forwardImgview.backgroundColor = [UIColor clearColor];
+	[forwardImgview.heightAnchor 
+		constraintEqualToConstant:30].active = true;
+	[forwardImgview.widthAnchor 
+		constraintEqualToConstant:30].active = true;
+
+	//playBackTime
+	UIView *playBackTimeview = [UIView new];
+	playBackTimeview.backgroundColor = [UIColor clearColor];
+	[playBackTimeview.heightAnchor 
+		constraintEqualToConstant:30].active = true;
+	[playBackTimeview.widthAnchor 
+		constraintEqualToConstant:60].active = true;
+
+	//playBackTotalTime
+	UIView *playBackTotalTimeview = [UIView new];
+	playBackTotalTimeview.backgroundColor = [UIColor clearColor];
+	[playBackTotalTimeview.heightAnchor 
+		constraintEqualToConstant:30].active = true;
+	[playBackTotalTimeview.widthAnchor 
+		constraintEqualToConstant:60].active = true;
+
+	self.startImg = [UIImage 
+		imageNamed:@"playback_play.png"];
+	self.stopImg = [UIImage 
+		imageNamed:@"playback_pause.png"];
+	self.backwardImg = [UIImage 
+		imageNamed:@"playback_prev.png"];
+	self.forwardImg = [UIImage 
+		imageNamed:@"playback_ff.png"];
+
+	self.startbtn = [[UIButton alloc] 
+		initWithFrame:CGRectMake(0, 0, 30, 30)];
+	[self.startbtn 
+		setBackgroundImage:self.stopImg 
+		forState:UIControlStateNormal];
+	[self.startbtn 
+		addTarget:self 
+		action:@selector(videoPlay) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+
+	self.backbtn = [[UIButton alloc] 
+		initWithFrame:CGRectMake(0, 0, 30, 30)];
+	[self.backbtn 
+		setBackgroundImage:self.backwardImg 
+		forState:UIControlStateNormal];
+	[self.backbtn 
+		addTarget:self 
+		action:@selector(backwardPressed) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+
+	self.forwardbtn = [[UIButton alloc] 
+		initWithFrame:CGRectMake(0, 0, 30, 30)];
+	[self.forwardbtn 
+		setBackgroundImage:self.forwardImg 
+		forState:UIControlStateNormal];
+	[self.forwardbtn 
+		addTarget:self 
+		action:@selector(forwardPressed) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+
+	[startImgstopImgview addSubview:self.startbtn];
+	[backwardImgview addSubview:self.backbtn];
+	[forwardImgview addSubview:self.forwardbtn];
+
+
+	//Stack View
+	UIStackView *stackView = [UIStackView new];
+	stackView.axis = UILayoutConstraintAxisHorizontal;
+	stackView.distribution = UIStackViewDistributionEqualSpacing;
+	stackView.alignment = UIStackViewAlignmentCenter;
+	stackView.spacing = 35;
+
+	[stackView 
+		addArrangedSubview:playBackTimeview];
+	[stackView 
+		addArrangedSubview:backwardImgview];
+	[stackView 
+		addArrangedSubview:startImgstopImgview];
+	[stackView 
+		addArrangedSubview:forwardImgview];
+	[stackView 
+		addArrangedSubview:playBackTotalTimeview];
+
+	stackView.translatesAutoresizingMaskIntoConstraints = false;
+	[controlView addSubview:stackView];
+
+
+	//Layout for Stack View
+	[stackView.centerXAnchor constraintEqualToAnchor:controlView.centerXAnchor].active = true;
+	[stackView.centerYAnchor constraintEqualToAnchor:controlView.centerYAnchor].active = true;
+
+
+	currentT = [player currentTime];
+
+	//現在の時間ラベル
+	self.playBackTime = [[UILabel alloc] 
+		initWithFrame:CGRectMake(25, 0, 60, 30)];
+	self.playBackTime.text = [self getStringFromCMTime:player.currentTime];
+
+//	self.playBackTime.adjustsFontSizeToFitWidth = YES;
+	[self.playBackTime setTextColor:[UIColor whiteColor]];
+	[playBackTimeview addSubview:self.playBackTime];
+
+    
+	//合計時間ラベル
+	self.playBackTotalTime = [[UILabel alloc] 
+		initWithFrame:CGRectMake(- 10, 0, 60, 30)];
+	self.playBackTotalTime.text = [self getStringFromCMTime:player.currentItem.asset.duration];
+
+//	self.playBackTotalTime.adjustsFontSizeToFitWidth = YES;
+	[self.playBackTotalTime setTextColor:[UIColor whiteColor]];
+	[playBackTotalTimeview addSubview:self.playBackTotalTime];
+
+
+	CMTime interval = CMTimeMake(1, 1000);
+	__weak __typeof(self) weakself = self;
+
+	playbackObserver = [player 
+		addPeriodicTimeObserverForInterval:interval 
+		queue:dispatch_get_main_queue() 
+		usingBlock: ^(CMTime time) {
+
+	CMTime endTime = CMTimeConvertScale (
+		player.currentItem.asset.duration, 
+		player.currentTime.timescale, 
+		kCMTimeRoundingMethod_RoundHalfAwayFromZero);
+
+	if (CMTimeCompare(endTime, kCMTimeZero) != 0) {
+		double normalizedTime = (double) player.currentTime.value / (double) endTime.value;
+		weakself.progressBar.value = normalizedTime;
+	}
+	weakself.playBackTime.text = [self getStringFromCMTime:player.currentTime];
+    }];
+}
+
+- (NSString*)getStringFromCMTime:(CMTime)time {
+	Float64 currentSeconds = CMTimeGetSeconds(time);
+	int mins = currentSeconds/60.0;
+	int secs = fmodf(currentSeconds, 60.0);
+
+	NSString *minsString = mins < 10 ? 
+		[NSString stringWithFormat:@"0%d", mins] : 
+		[NSString stringWithFormat:@"%d", mins];
+	NSString *secsString = secs < 10 ? 
+		[NSString stringWithFormat:@"0%d", secs] : 
+		[NSString stringWithFormat:@"%d", secs];
+
+	return [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+}
+
+- (void)videoPlay {
+	if (player.rate > 0) {
+		[player pause];
+		[self.startbtn 
+			setBackgroundImage:self.startImg 
+			forState:UIControlStateNormal];
+	} else {
+		[player play];
+		[self.startbtn 
+			setBackgroundImage:self.stopImg 
+			forState:UIControlStateNormal];
+	}
+}
+
+- (void)backwardPressed {
+	[player seekToTime:CMTimeSubtract(
+		player.currentTime, CMTimeMake(5, 1))];
+}
+
+- (void)forwardPressed {
+	[player seekToTime:CMTimeAdd(
+		player.currentTime, CMTimeMake(5, 1))];
+}
+
+#pragma mark - CurrentTimeSlider
+- (void)initCurrentTimeSlider {
+	self.progressBar = [[UISlider alloc] init];
+	self.progressBar.frame = CGRectMake(25, 595, W - 50, 10);
+
+	[self.progressBar addTarget:self 
+		action:@selector(progressBarChanged:) 
+		forControlEvents:UIControlEventValueChanged];
+
+	[self.progressBar addTarget:self 
+		action:@selector(proressBarChangeEnded:) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+	[self.view addSubview:self.progressBar];
+}
+
+- (void)progressBarChanged:(UISlider *)sender {
+	if (player.rate > 0) {
+		[player pause];
+	}
+
+	CMTime seekTime = CMTimeMakeWithSeconds(sender.value * (double)player.currentItem.asset.duration.value / (double)player.currentItem.asset.duration.timescale, player.currentTime.timescale);
+	[player seekToTime:seekTime];
+}
+
+- (void)proressBarChangeEnded:(UISlider *)sender {
+	if (!player.rate) {
+		[player play];
+ 	}
+}
+
+#pragma mark - Custom UISlider
+- (void)initCustomSlider {
+	
+	//ツマミの画像
+	UIImage *imageForThumb = [UIImage 
+		imageNamed:@"love_red.png"];
+
+/*	//Min側の下地画像
+	UIImage *imageMinBase = [[UIImage 
+		imageNamed:@"slider_left.png"] 
+		stretchableImageWithLeftCapWidth:4 
+		topCapHeight:0];
+
+	//Max側の下地画像
+	UIImage *imageMaxBase = [[UIImage 
+		imageNamed:@"slider_right.png"] 
+		stretchableImageWithLeftCapWidth:4 
+		topCapHeight:0];
+*/
+
+	//各画像をセット
+	[self.progressBar setThumbImage:imageForThumb 
+		forState:UIControlStateNormal];
+/*	[self.progressBar 
+		setMinimumTrackImage:imageMinBase 
+		forState:UIControlStateNormal];
+	[self.progressBar 
+		setMaximumTrackImage:imageMaxBase 
+		forState:UIControlStateNormal];
+*/
+}
+
+#pragma mark - initPCappAction
+- (void)initPCappAction {
+
+	[addButtonManager.sharedInstance 
+		addButton:self.pcappButton 
+		title:pcapptitle 
+		delegate:self 
+		action:pcappAction 
+		toItem:self.view 
+		multiplierX:1.0f 
+		constantX:0.0f 
+		multiplierY:0.4f 
+		constantY:0.0f];
 }
 
 #pragma mark - CurrentTimeLabel
@@ -579,26 +942,26 @@ UDID : %@\r\n ", \
 
 	UNMutableNotificationContent *localNotification = [UNMutableNotificationContent new];
 
-		localNotification.title = [NSString localizedUserNotificationStringForKey:@"UNUserNotificationCenter" arguments:nil];
+	localNotification.title = [NSString localizedUserNotificationStringForKey:@"UNUserNotificationCenter" arguments:nil];
 
-		localNotification.body = [NSString localizedUserNotificationStringForKey:@"UNUserNotificationCenter" arguments:nil];
+	localNotification.body = [NSString localizedUserNotificationStringForKey:@"UNUserNotificationCenter" arguments:nil];
 
-		localNotification.sound = [UNNotificationSound defaultSound];
+	localNotification.sound = [UNNotificationSound defaultSound];
 
-		UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger 
-			triggerWithTimeInterval:0.1 
-			repeats:NO];
+	UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger 
+		triggerWithTimeInterval:0.1 
+		repeats:NO];
 
-		UNNotificationRequest *request = [UNNotificationRequest 
-			requestWithIdentifier:@"Time for a run!" 
-			content:localNotification 
-			trigger:trigger];
+	UNNotificationRequest *request = [UNNotificationRequest 
+		requestWithIdentifier:@"Time for a run!" 
+		content:localNotification 
+		trigger:trigger];
     
-		UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+	UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
 
-		center.delegate = self;
+	center.delegate = self;
 
-		[center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+	[center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
         //NSLog(@"Notification created");
     }];
 
@@ -943,11 +1306,14 @@ UDID : %@\r\n ", \
 - (void)initStackView {
 	UIView *mainView = [[UIView alloc] 
 		initWithFrame:CGRectMake(
-			W / 2 - 150, H / 2 - 150, 
-			300, 100)];
+			0, 
+			H / 2 - 150, 
+			W, //wide
+			50 //height
+		)];
 
 	mainView.backgroundColor = [self randomColor];
-	mainView.layer.cornerRadius = 25.5;
+	mainView.layer.cornerRadius = 20.0;
 	[self.view addSubview:mainView];
 
 	//view 1
@@ -1014,6 +1380,8 @@ UDID : %@\r\n ", \
 		[self fadeOut:target];
 	}];
 }
+
+
 /*
 - (void)initButton {
 
@@ -1029,69 +1397,6 @@ UDID : %@\r\n ", \
 		constantY:0.0f];
 }
 */
-
-- (void)initToolbarItem {
-	self.navigationController.toolbar.tintColor = [UIColor redColor];
-
-	UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
-    initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
-	UIBarButtonItem *uiberButton1 = [[UIBarButtonItem alloc] 
-		initWithTitle:@"Power Controller" 
-		style:UIBarButtonItemStylePlain 
-		target:self 
-		action:@selector(tapedButton1)];
-
-	UIBarButtonItem *uiberButton2 = [[UIBarButtonItem alloc] 
-		initWithTitle:@"ボタン2" 
-		style:UIBarButtonItemStylePlain 
-		target:self 
-		action:@selector(tapedButton2)];
-
-	UIBarButtonItem *uiberButton3 = [[UIBarButtonItem alloc] 
-		initWithTitle:@"ボタン3" 
-		style:UIBarButtonItemStylePlain 
-		target:self 
-		action:@selector(tapedButton3)];
-
-	UIBarButtonItem *uiberButton4 = [[UIBarButtonItem alloc] 
-		initWithTitle:@"設定" 
-		style:UIBarButtonItemStylePlain 
-		target:self 
-		action:@selector(tapedButton4)];
-
-	NSArray *items = [NSArray 
-		arrayWithObjects:
-		spacer, 
-		uiberButton1, 
-		spacer, 
-		uiberButton2, 
-		spacer, 
-		uiberButton3, 
-		spacer, 
-		uiberButton4, 
-		spacer, nil];
-
-	self.toolbarItems = items;
-}
-
-- (void)tapedButton1 {
-	
-}
-
-- (void)tapedButton2 {
-	
-}
-
-- (void)tapedButton3 {
-	
-}
-
-- (void)tapedButton4 {
-	SettingViewController *SVC = [SettingViewController new];
-	[self.navigationController pushViewController:SVC 
-		animated:YES];
-}
 
 - (void)tappedButton:(UIButton*)button {
 
@@ -1190,13 +1495,11 @@ UDID : %@\r\n ", \
 		defaultDeviceWithMediaType:AVMediaTypeVideo];
 
 	if (sw.on == YES) {
-		//ライトon
 		[captureDevice lockForConfiguration:NULL];
 		captureDevice.torchMode = AVCaptureTorchModeOn;
 		[captureDevice unlockForConfiguration];
 
 	} else {
-		//ライトoff
 		[captureDevice lockForConfiguration:NULL];
 		captureDevice.torchMode = AVCaptureTorchModeOff;
 		[captureDevice unlockForConfiguration];
@@ -1217,6 +1520,7 @@ UDID : %@\r\n ", \
 }
 
 - (void)initUIBarButtonItem {
+
 	self.rightButtonItem = [[UIBarButtonItem alloc] 
 		initWithTitle:@"❤️" 
 		style:UIBarButtonItemStyleDone 
@@ -1230,21 +1534,44 @@ UDID : %@\r\n ", \
 		[self tapbt];
 		}];
 
+	self.rightButtonItem2 = [[UIBarButtonItem alloc] 
+		initWithTitle:@"🔄" 
+		style:UIBarButtonItemStyleDone 
+		target:self 
+		action:@selector(isLocked)];
+
 	self.leftButtonItem = [[UIBarButtonItem alloc] 
 		initWithTitle:@"📱" 
 		style:UIBarButtonItemStyleDone 
 		target:self 
 		action:@selector(leftButtonTapped)];
 
+	self.leftButtonItem1 = [[UIBarButtonItem alloc] 
+		initWithTitle:@"log" 
+		style:UIBarButtonItemStyleDone 
+		target:self 
+		action:@selector(logButtonTapped)];
+
 	self.navigationItem.rightBarButtonItems = @[
+		self.rightButtonItem2, 
 		self.rightButtonItem, 
 		self.rightButtonItem1];
 
+	self.navigationItem.leftBarButtonItems = @[
+		self.leftButtonItem, 
+		self.leftButtonItem1];
+
 	//self.navigationItem.rightBarButtonItem = self.rightButtonItem;
-	self.navigationItem.leftBarButtonItem = self.leftButtonItem;
+	//self.navigationItem.leftBarButtonItem = self.leftButtonItem;
+}
+
+- (void)isLocked {
+	notify_post("com.mikiyan1978.lockandunlock");
 }
 
 - (void)leftButtonTapped {
+	//sleep(5); // #include <unistd.h>
+
 	UIAlertController *alert = [UIAlertController 
 		alertControllerWithTitle:@"Device Information\r\n" 
 		message:isDeviceInfoStr 
@@ -1260,53 +1587,151 @@ UDID : %@\r\n ", \
 		completion:nil];
 }
 
+- (void)logButtonTapped {
+	
+	popController = [UIViewController new];
+	popController.modalPresentationStyle = UIModalPresentationPopover;
+	popController.preferredContentSize = 
+		CGSizeMake(150, 80);
+
+	UILabel *respringLabel = [[UILabel alloc] init];
+	respringLabel.frame = CGRectMake(0, 10, 150, 50);
+	respringLabel.numberOfLines = 2;
+	respringLabel.textAlignment = NSTextAlignmentCenter;
+	respringLabel.adjustsFontSizeToFitWidth = YES;
+	respringLabel.font = [UIFont boldSystemFontOfSize:15];
+	respringLabel.textColor = [UIColor labelColor];
+	respringLabel.text = @"Are you sure you want to respring?";
+	[popController.view addSubview:respringLabel];
+
+
+	UIButton *yesButton = [UIButton 
+		buttonWithType:UIButtonTypeCustom];
+	[yesButton 
+		addTarget:self 
+		action:@selector(handleYesGesture) 
+		forControlEvents:UIControlEventTouchUpInside];
+	[yesButton setTitle:@"Yes" 
+		forState:UIControlStateNormal];
+	[yesButton setTitleColor:[UIColor labelColor] 
+		forState:UIControlStateNormal];
+	yesButton.frame = CGRectMake(75, 60, 75, 30);
+	[popController.view addSubview:yesButton];
+
+    
+	UIButton *noButton = [UIButton 
+		buttonWithType:UIButtonTypeCustom];
+	[noButton 
+		addTarget:self 
+		action:@selector(handleNoGesture) 
+		forControlEvents:UIControlEventTouchUpInside];
+	[noButton setTitle:@"No" 
+		forState:UIControlStateNormal];
+	[noButton setTitleColor:[UIColor labelColor] 
+		forState:UIControlStateNormal];
+	noButton.frame = CGRectMake(0, 60, 75, 30);
+	[popController.view addSubview:noButton];
+
+	//UIPopoverPresentationController
+	UIPopoverPresentationController *popover = popController.popoverPresentationController;
+	[popover setBackgroundColor:[UIColor grayColor]];
+	popover.delegate = self;
+	popover.permittedArrowDirections = UIPopoverArrowDirectionUp;
+	popover.barButtonItem = self.leftButtonItem1;
+
+	[self presentViewController:popController 
+		animated:YES 
+		completion:nil];
+
+	AudioServicesPlaySystemSound(1025);
+
+}
+
+- (void)handleYesGesture {
+	notify_post("com.mikiyan1978.sbreload");
+}
+
+- (void)handleNoGesture {
+	AudioServicesPlaySystemSound(1025);
+}
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+	return UIModalPresentationNone;
+}
+
 //シェア
 - (void)shareTapped {
    
-    NSString *shareText = @"#Power Controller App X by @mikiyan1978! Download from https://kisaragiray.github.io/repo/ repo in Cydia for free!";
+	//NSString *shareText = @"#Power Controller App by @mikiyan1978! repo in Cydia for free!";
 	
-    UIImage *image = [UIImage imageWithContentsOfFile:PCAImagePath];
-    NSArray * itemsToShare = @[shareText, image];
-    
-	
-	UIActivityViewController *controller = [[UIActivityViewController alloc] 
+	//UIImage *image = [UIImage imageWithContentsOfFile:PCAImagePath];
+
+	UIImage *image = [UIImage imageNamed:@"box.png"];
+
+	//NSURL *url = [NSURL URLWithString:@"https://kisaragiray.github.io/repo/"];
+
+	//NSURL *imageUrl = [NSURL URLWithString:@"https://www.jailbreakme.com/saffron/icon@2x.png"];
+
+	NSArray *itemsToShare = @[image];
+
+
+
+	if (%c(UIActivityViewController)) {
+		UIActivityViewController *uiacontroller = [[%c(UIActivityViewController) alloc] 
+			initWithActivityItems:itemsToShare 
+			applicationActivities:nil];
+
+		[self presentViewController:uiacontroller 
+			animated:YES 
+			completion:NULL];
+	} else {
+		/*[[UIApplication sharedApplication] 
+			openURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://twitter.com/intent/tweet?text=%@%%20%@", URL_ENCODE(shareText), URL_ENCODE(imageUrl.absoluteString)]] 
+			options:@{} 
+			completionHandler:nil];*/
+	}
+
+	/*UIActivityViewController *controller = [[UIActivityViewController alloc] 
 		initWithActivityItems:itemsToShare 
 		applicationActivities:nil];
 
-	[self presentActivityController:controller];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self presentActivityController:controller];
+	});*/
+
+	//[self presentActivityController:controller];
 }
 
 
 - (void)presentActivityController:(UIActivityViewController *)controller {
-    
-    // for iPad: make the presentation a Popover
-    controller.modalPresentationStyle = UIModalPresentationPopover;
-    [self presentViewController:controller animated:YES completion:nil];
-    
-    UIPopoverPresentationController *popController = [controller popoverPresentationController];
-    popController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popController.barButtonItem = self.navigationItem.rightBarButtonItem;
+
+	// for iPad: make the presentation a Popover
+	controller.modalPresentationStyle = UIModalPresentationPopover;
+	[self presentViewController:controller animated:YES completion:nil];
+
+	UIPopoverPresentationController *popController = [controller popoverPresentationController];
+	popController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+	popController.barButtonItem = self.navigationItem.rightBarButtonItem;
 
 	controller.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *error) {
-        // react to the completion
-        if (completed) {
-            
-            // user shared an item
+		// react to the completion
+		if (completed) {
+		// user shared an item
 		os_log(OS_LOG_DEFAULT, "アクティビティタイプを使用しました%@", activityType);
-            NSLog(@"We used activity type%@", activityType);
-            
-        } else {
-            
-            // user cancelled
+		NSLog(@"We used activity type%@", activityType);
+
+		} else {
+		
+		// user cancelled
 		os_log(OS_LOG_DEFAULT, "結局、何も共有したくありませんでした。");
-            NSLog(@"We didn't want to share anything after all.");
-        }
-        
-        if (error) {
+		NSLog(@"We didn't want to share anything after all.");
+		}
+
+		if (error) {
 		os_log(OS_LOG_DEFAULT, "エラーが発生した: %@, %@", error.localizedDescription, error.localizedFailureReason);
-            NSLog(@"An Error occured: %@, %@", error.localizedDescription, error.localizedFailureReason);
-        }
-    };
+		NSLog(@"An Error occured: %@, %@", error.localizedDescription, error.localizedFailureReason);
+		}
+	};
  
 }
 
@@ -1325,6 +1750,31 @@ UDID : %@\r\n ", \
 	}
 
 	return [NSString stringWithFormat:@"UUID:%@", uuidStr];
+}
+
+#pragma mark - 穴開きビュー
+- (void)initUIViewButtonAction {
+
+	[addButtonManager.sharedInstance 
+		addButton:self.uiViewButton 
+		title:uiViewButtonTitle 
+		delegate:self 
+		action:uiViewButtonAction 
+		toItem:self.view 
+		multiplierX:1.0f 
+		constantX:0.0f 
+		multiplierY:1.7f 
+		constantY:0.0f];
+}
+
+- (void)uiViewButtonAction {
+	[self makeHoleAt:CGPointMake(W / 2, H / 2) radius:50];
+
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 
+		(int64_t)(2.0 * NSEC_PER_SEC)), 
+		dispatch_get_main_queue(), ^{
+			[cashapeView removeFromSuperview];
+	});
 }
 
 - (void)makeHoleAt:(CGPoint)point radius:(CGFloat)radius {
@@ -1355,16 +1805,6 @@ UDID : %@\r\n ", \
 	[self.view addSubview:cashapeView];
 }
 
-- (void)uiViewButtonAction {
-	[self makeHoleAt:CGPointMake(W / 2, H / 2) radius:50];
-
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 
-		(int64_t)(5.0 * NSEC_PER_SEC)), 
-		dispatch_get_main_queue(), ^{
-			[cashapeView removeFromSuperview];
-	});
-}
-
 - (void)initSiri {
 	speechSynthesizer = [AVSpeechSynthesizer new];
 	NSString* speakingText = @"この度はPower Controller App Xをインストールして頂き、誠にありがとうございます";
@@ -1390,7 +1830,101 @@ UDID : %@\r\n ", \
 	utterance2.volume = 1.0;
 	[speechSynthesizer speakUtterance:utterance2];
 }
-////////////////////////////メモリ警告//////////////////////////////////
+
+
+- (void)testSnowAndRain{
+	// 雪降らす
+	UIImageView *snowImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	snowImageView.image = [UIImage imageNamed:@"snow_white"];
+
+	CAEmitterLayerView *snowView = [[SnowView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	//snowView.maskView = snowImageView;
+	[self.view addSubview:snowView];
+	[snowView show];
+
+	/*// 雨降らす
+	UIImageView *rainImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+	rainImageView.image = [UIImage imageNamed:@"alpha"];
+
+	CAEmitterLayerView *rainView = [[RainView alloc] initWithFrame:CGRectMake(100, 210, 100, 100)];
+	rainView.maskView = rainImageView;
+	[self.view addSubview:rainView];
+	[rainView show];*/
+
+}
+
+- (void)addEmitter {
+    //创建粒子的Layer
+    CAEmitterLayer* emitterLayer = [CAEmitterLayer layer];
+    //显示边框
+    emitterLayer.borderWidth = 1.f;
+    emitterLayer.borderColor = [UIColor whiteColor].CGColor;
+    //给定尺寸
+    emitterLayer.frame = CGRectMake(100, 400, 100, 100);
+    //发射点
+    emitterLayer.emitterPosition = CGPointMake(50, 50);
+    //发射模式
+    emitterLayer.emitterMode = kCAEmitterLayerSurface;
+    //发射形状
+    emitterLayer.emitterShape = kCAEmitterLayerLine;
+    //添加到父Layer上
+    [self.view.layer addSublayer:emitterLayer];
+    
+    
+    //创建粒子
+    CAEmitterCell* emitterCell = [CAEmitterCell emitterCell];
+    //粒子発生率
+    emitterCell.birthRate = 1.f;//这个相当于是某单位时间产生粒子的个数
+    //粒子のライフサイクル
+    emitterCell.lifetime = 120.f;//这个是单个粒子的生命周期的时间
+    //速度值
+    emitterCell.velocity = 10;
+    //速度値の微調整値
+    emitterCell.velocityRange = 3.f;
+    //y轴加速度
+    emitterCell.yAcceleration = 2.f;//这里的设置表示在y轴正方向有个2.f大小的加速度，模拟重力
+    //発射角度
+    emitterCell.emissionRange = M_PI * M_1_PI;// 暂时不理解
+    //パーティクルの色を設定します
+    emitterCell.color = [UIColor blueColor].CGColor;
+    //画像を設定する
+    emitterCell.contents = (__bridge id _Nullable)([UIImage imageNamed:@"snow"].CGImage);// 我暂时不理解图片的要求是什么？
+    //让CAEmitterCell与CAEmitterLayer产生关联
+    emitterLayer.emitterCells = @[emitterCell];//用的数组，说明一个CAEmitterLayer可以关联多个CAEmitterCell
+    
+}
+
+- (void)initVersion {
+	//バージョンアップした時のアラート
+	NSString *bundleVersion = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
+
+	NSString *loadedVersion = @"1.0";
+ 
+	// show alert view
+	if ([loadedVersion compare:bundleVersion options:NSNumericSearch] == NSOrderedAscending) {
+
+		[addAlertManager.sharedInstance 
+			addAlert:self.vaddAlert 
+			preferredStyle:UIAlertControllerStyleAlert 
+			alertControllerWithTitle:[NSString stringWithFormat:@"バージョン%@の変更点", bundleVersion] 
+			alertMessage:@"バージョンアップしました！" 
+			actionWithTitle:@"そうなんですね！" 
+			target:self 
+			actionHandler:^(){
+
+		}];
+	}
+}
+
+- (void)lock {
+	notify_post("com.mikiyan1978.lock");
+}
+
+- (void)unlock {
+	notify_post("com.mikiyan1978.unlock");
+}
+
+/////////////////////メモリ警告/////////////////////////////////
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 }
@@ -1401,7 +1935,6 @@ UDID : %@\r\n ", \
 
 
 extern NSString *const HBPreferencesDidChangeNotification;
-
 
 %ctor {
 	HBPreferences *prefs = [[HBPreferences alloc] 

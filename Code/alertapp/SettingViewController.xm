@@ -1,6 +1,7 @@
 #import "XXRootViewController.h"
 #import "HelpViewController.h"
 #import "SettingViewController.h"
+#import <CFUserNotificationHandler/CFUserNotificationHandler.h>
 @import SceneKit;
 
 SCNScene *scene;
@@ -8,22 +9,110 @@ SCNView *sceneView;
 SCNCamera *camera;
 SCNNode *cameraNode;
 
-@implementation SettingViewController
+@implementation SettingViewController {
+	NSArray *cellImages;
+	NSArray *titles;
+	NSArray *contents;
+	UILabel *Label;
+}
  
 - (void)loadView {
 	[super loadView];
-	self.view = [[UIView alloc] 
-		initWithFrame:[UIScreen mainScreen].bounds];
-	self.view.backgroundColor = [UIColor cyanColor];
 
-	[self createSceneView];
-	[self createScene];
-	[self createCamera];
+	cellImages = @[
+		@"twitter.png", 
+		@"line.png", 
+		@"cydia.png"];
+
+	titles = @[
+		@"mikiyan1978", 
+		@"LINE", 
+		@"リポジトリ"];
+
+	contents = @[
+		@"Twitter", 
+		@"LINE追加", 
+		@"リポジトリ追加"];
+
+	/*self.view = [[UIView alloc] 
+		initWithFrame:[UIScreen mainScreen].bounds];*/
+	//self.view.backgroundColor = [UIColor cyanColor];
+
+	//[self createSceneView];
+	//[self createScene];
+	//[self createCamera];
 	//[self createPlate]; //地面
-	[self setupFloor]; //地面
-	[self createText];
+	//[self setupFloor]; //地面
+	//[self createText];
 	//[self initSCNBox];
 }
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { //セクション数
+	return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { //セル数
+	//return 3;
+	return [cellImages count];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return 60;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+	return NO;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+	static NSString *CellIdentifier = @"tableCell";
+	UITableViewCell *cell = [tableView 
+		dequeueReusableCellWithIdentifier:CellIdentifier];
+
+	if (indexPath.section == 0) {
+		if (!cell) {
+			cell = [[UITableViewCell alloc] 
+				initWithStyle:UITableViewCellStyleSubtitle 
+				reuseIdentifier:CellIdentifier];
+		}
+
+		cell.textLabel.text = titles[indexPath.row];
+		cell.detailTextLabel.text = contents[indexPath.row];
+		cell.imageView.image = [UIImage 
+			imageNamed:cellImages[indexPath.row]];
+		cell.imageView.layer.cornerRadius = 13.0;
+		cell.imageView.clipsToBounds = YES;
+		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	}
+
+	return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+
+	CFUserNotificationRef cAlert = nil;
+
+	[[CFUserNotificationHandler sharedInstance] 
+		addCFNotiAlert:cAlert 
+		title:@"タップされたのは→" 
+		alertMessage:[NSString 
+			stringWithFormat:@"%@",cell.textLabel.text] 
+		yesStr:@"yes" 
+		cancelStr:@"cancel" 
+		yesActionHandler:^(){
+		//
+		}];
+
+}
+
+
+
+
+
+
+
 
 - (void)createPlate {
 	SCNBox *plate = [SCNBox 

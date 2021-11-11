@@ -3,6 +3,7 @@
 #import "SettingViewController.h"
 #import "HelpViewController.h"
 #import "SceneKitView.h"
+#import "SystemSounds.h"
 #import <libpowercontroller/powercontroller.h>
 
 @implementation XXAppDelegate
@@ -14,35 +15,46 @@
 	_window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_rootViewController = [[UINavigationController alloc] initWithRootViewController:[[XXRootViewController alloc] init]];
 
+
 	_rootViewController.tabBarItem.image=[UIImage imageNamed:@"home.png"];
 	_rootViewController.tabBarItem.title = @"HOME";
 
 	_helpView = [[UINavigationController alloc] initWithRootViewController:[HelpViewController new]];
 	_helpView.tabBarItem.image=[UIImage imageNamed:@"help.png"];
-    _helpView.tabBarItem.title = @"HELP";
+	_helpView.tabBarItem.title = @"HELP";
 
-	//_settingView = [[UINavigationController alloc] initWithRootViewController:[SettingViewController new]];
-	//_settingView.tabBarItem.image=[UIImage imageNamed:@"settings.png"];
-	//_settingView.tabBarItem.title = @"設定";
+	_SystemSoundsview = [[UINavigationController alloc] 
+		initWithRootViewController:[SystemSounds new]];
+	_SystemSoundsview.tabBarItem.image=[UIImage imageNamed:@""];
+	_SystemSoundsview.tabBarItem.title = @"SystemSounds";
 
-	//_SceneKitview = [[UINavigationController alloc] initWithRootViewController:[SceneKitView new]];
-	//_SceneKitview.tabBarItem.image=[UIImage imageNamed:@"SceneKitview.png"];
-	//_SceneKitview.tabBarItem.title = @"SceneKitview";
+	_settingView = [[UINavigationController alloc] initWithRootViewController:[SettingViewController new]];
+	_settingView.tabBarItem.image=[UIImage imageNamed:@"setting.png"];
+	_settingView.tabBarItem.title = @"設定";
+
+	_SceneKitview = [[UINavigationController alloc] initWithRootViewController:[SceneKitView new]];
+	_SceneKitview.tabBarItem.image=[UIImage imageNamed:@"Testview.png"];
+	_SceneKitview.tabBarItem.title = @"Testview";
 
 
 	[localViewControllersArray 
 		addObject:_rootViewController];
-
-	//[localViewControllersArray addObject:_settingView];
-	//[localViewControllersArray addObject:_SceneKitview];
+	[localViewControllersArray addObject:_settingView];
 	[localViewControllersArray addObject:_helpView];
+	[localViewControllersArray addObject:_SceneKitview];
+	[localViewControllersArray addObject:_SystemSoundsview];
 
 	tabBars.viewControllers = localViewControllersArray;
-	tabBars.view.autoresizingMask=(UIViewAutoresizingFlexibleHeight);    
+	tabBars.view.autoresizingMask=(UIViewAutoresizingFlexibleHeight);
+
+
+
+
 
 	_window.rootViewController = tabBars;
 	[_window makeKeyAndVisible];
 }
+
 
 - (void)ShortcutItem {
     
@@ -131,6 +143,7 @@
 	// Activeでなくなる時の処理.
 	notify_post("com.mikiyan1978.noactivenoti");
 }
+
 
 
 @end

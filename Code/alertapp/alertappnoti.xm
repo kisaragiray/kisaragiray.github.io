@@ -1,13 +1,8 @@
-@import Foundation;
-#include <dlfcn.h>
-#import <objc/runtime.h>
-#import <JBBulletinManager/JBBulletinManager.h>
-#import <libnotifications/libnotifications.h>
-#import <libpowercontroller/powercontroller.h>
-#import "XXRootViewController.h"
+#import "alertappnoti.h"
 
 NSString *soundPath = @"/System/Library/Audio/UISounds/tweet_sent.caf";
 
+//libnotifications
 void alertapplibnotificationsuicachenoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	void *handle = dlopen("/usr/lib/libnotifications.dylib", RTLD_LAZY);
@@ -31,6 +26,7 @@ void alertapplibnotificationsuicachenoti(CFNotificationCenterRef center, void *o
 
 }
 
+//uicache通知
 void alertapplibbulletinuicachenoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	[[%c(JBBulletinManager) sharedInstance] 
@@ -41,6 +37,7 @@ void alertapplibbulletinuicachenoti(CFNotificationCenterRef center, void *observ
 
 }
 
+//iOS14通知
 void alertapplibbulletin14upnoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	[[%c(JBBulletinManager) sharedInstance] 
@@ -50,6 +47,7 @@ void alertapplibbulletin14upnoti(CFNotificationCenterRef center, void *observer,
 
 }
 
+//iOS14通知
 void alertapplibbulletin14downnoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	[[%c(JBBulletinManager) sharedInstance] 
@@ -59,14 +57,14 @@ void alertapplibbulletin14downnoti(CFNotificationCenterRef center, void *observe
 
 }
 
+//sbreload
 static void alertappsbreload(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-
-	//uptimeAlert(self);
 	NSTask* task = [NSTask new];
 	[task setLaunchPath:@"/usr/bin/sbreload"];
 	[task launch];
 }
 
+//起動通知
 static void activeNoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	[[%c(JBBulletinManager) sharedInstance] 
 		showBulletinWithTitle:@"ApplicationDidBecomeActive" 
@@ -74,6 +72,7 @@ static void activeNoti(CFNotificationCenterRef center, void *observer, CFStringR
 		bundleID:@"com.mikiyan1978.alertapp"];
 }
 
+//閉じられた通知
 static void noActiveNoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	[[%c(JBBulletinManager) sharedInstance] 
 		showBulletinWithTitle:@"ApplicationWillResignActive" 
@@ -81,13 +80,59 @@ static void noActiveNoti(CFNotificationCenterRef center, void *observer, CFStrin
 		bundleID:@"com.mikiyan1978.alertapp"];
 }
 
+//userspace reboot
 static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	NSTask *task = [NSTask new];
- 	[task setLaunchPath:@"/bin/sh"];
+	[task setLaunchPath:@"/bin/sh"];
 	[task setArguments:[NSArray arrayWithObjects:
 		@"-c", 
 		@"launchctl reboot userspace", nil]];
-        [task launch];
+	[task launch];
+}
+
+//sbreload
+static void sbreload(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	NSTask *task = [NSTask new];
+	[task setLaunchPath:@"/bin/sh"];
+	[task setArguments:[NSArray arrayWithObjects:
+		@"-c", 
+		@"sbreload", nil]];
+	[task launch];
+}
+
+//スクショ
+static void takeScreenshot(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[[%c(SpringBoard) sharedApplication] takeScreenshot];
+}
+
+//画面回転lock
+void lock(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[[%c(SBOrientationLockManager) sharedInstance] lock];
+}
+
+//画面回転unlock
+void unlock(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	[[%c(SBOrientationLockManager) sharedInstance] unlock];
+}
+
+//画面回転
+void lockandunlock(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+
+	if ([[%c(SBOrientationLockManager) sharedInstance] isUserLocked]) {
+		[[%c(SBOrientationLockManager) sharedInstance] unlock];
+	} else {
+		[[%c(SBOrientationLockManager) sharedInstance] lock];
+	}
+}
+
+//kMRNextTrack
+void kNextTrack(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	MRMediaRemoteSendCommand(kMRNextTrack, nil);
+}
+
+//kMRPreviousTrack
+void kPreviousTrack(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
 }
 
 %dtor {
@@ -124,7 +169,33 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.rebootUserspace"), NULL);
 
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.sbreload"), NULL);
 
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.takeScreenshot"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.lock"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.unlock"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.lockandunlock"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.kNextTrack"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.kPreviousTrack"), NULL);
 }
 
 
@@ -166,11 +237,13 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 		CFSTR("com.mikiyan1978.alertappsbreload"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
+
 	CFNotificationCenterAddObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 		activeNoti, 
 		CFSTR("com.mikiyan1978.activenoti"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
+
 
 	CFNotificationCenterAddObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
@@ -178,12 +251,57 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 		CFSTR("com.mikiyan1978.noactivenoti"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
+
 	CFNotificationCenterAddObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 		rebootUserspace, 
 		CFSTR("com.mikiyan1978.rebootUserspace"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		sbreload, 
+		CFSTR("com.mikiyan1978.sbreload"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		takeScreenshot, 
+		CFSTR("com.mikiyan1978.takeScreenshot"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		lock, 
+		CFSTR("com.mikiyan1978.lock"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		unlock, 
+		CFSTR("com.mikiyan1978.unlock"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		lockandunlock, 
+		CFSTR("com.mikiyan1978.lockandunlock"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		kNextTrack, 
+		CFSTR("com.mikiyan1978.kNextTrack"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		kPreviousTrack, 
+		CFSTR("com.mikiyan1978.kPreviousTrack"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 }
 
