@@ -10,11 +10,37 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 @implementation XXXRootListController
 
 - (NSArray *)specifiers {
+
+	directoryContent = [[NSFileManager defaultManager] 
+		contentsOfDirectoryAtPath:@"/var/mobile/Library/Preferences/MusicVideo/" 
+		error:NULL];
+
 	if (!_specifiers) {
 		_specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
 	}
-
 	return _specifiers;
+	[self apply];
+}
+
+- (void)previewAndSet:(id)value forSpecifier:(id)specifier{
+	AudioServicesDisposeSystemSoundID(selectedSound);
+
+	AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/MusicVideo/%@", value]], &selectedSound);
+
+	AudioServicesPlaySystemSound(selectedSound);
+    
+	[super setPreferenceValue:value specifier:specifier];
+}
+
+- (NSArray *)getValues:(id)target{
+	NSMutableArray *listing = [NSMutableArray arrayWithObjects:@"None", nil];
+
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"pathExtension != ''"];
+
+	for (NSURL *fileURL in [directoryContent filteredArrayUsingPredicate:predicate]) {
+		[listing addObject:fileURL];
+	}
+	return listing;
 }
 
 

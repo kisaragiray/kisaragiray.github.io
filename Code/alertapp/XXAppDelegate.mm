@@ -4,6 +4,9 @@
 #import "HelpViewController.h"
 #import "SceneKitView.h"
 #import "SystemSounds.h"
+#import "MapViewController.h"
+#import "TestviewController.h"
+
 #import <libpowercontroller/powercontroller.h>
 
 @implementation XXAppDelegate
@@ -36,6 +39,14 @@
 	_SceneKitview.tabBarItem.image=[UIImage imageNamed:@"Testview.png"];
 	_SceneKitview.tabBarItem.title = @"Testview";
 
+	_mapView = [[UINavigationController alloc] initWithRootViewController:[MapViewController new]];
+	_mapView.tabBarItem.image=[UIImage imageNamed:@"mapView.png"];
+	_mapView.tabBarItem.title = @"マップ";
+
+	_testView = [[UINavigationController alloc] initWithRootViewController:[TestviewController new]];
+	_testView.tabBarItem.image=[UIImage imageNamed:@""];
+	_testView.tabBarItem.title = @"test";
+
 
 	[localViewControllersArray 
 		addObject:_rootViewController];
@@ -43,6 +54,8 @@
 	[localViewControllersArray addObject:_helpView];
 	[localViewControllersArray addObject:_SceneKitview];
 	[localViewControllersArray addObject:_SystemSoundsview];
+	[localViewControllersArray addObject:_mapView];
+	[localViewControllersArray addObject:_testView];
 
 	tabBars.viewControllers = localViewControllersArray;
 	tabBars.view.autoresizingMask=(UIViewAutoresizingFlexibleHeight);
@@ -144,6 +157,19 @@
 	notify_post("com.mikiyan1978.noactivenoti");
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    // バックグラウンドに入る前に呼び出されます。これは、データを保存するのに適した場所です。
+    //このメソッドを呼び出した後、アプリケーションはUIApplicationWillResignActiveNotification通知も送信して、関心のあるオブジェクトに遷移に応答する機会を与えます。
+	os_log(OS_LOG_DEFAULT, "もうすぐバックグラウンドに入るから、データ保存してね");
+    // [self saveData];
+}
 
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+//ユーザーがホームボタンを押してアプリケーションを「終了」したときに呼び出されます。 （アプリは一時停止されます。）この方法を使用して、共有リソースの解放、ユーザーデータの保存、タイマーの無効化、およびアプリケーションが後で終了した場合に備えてアプリケーションを現在の状態に復元するのに十分なアプリケーション状態情報を保存します。
+    
+    //アプリケーションは、このメソッドを呼び出すのとほぼ同時にUIApplicationDidEnterBackgroundNotification通知を送信して、関心のあるオブジェクトに遷移に応答する機会を与えます。
+	os_log(OS_LOG_DEFAULT, "バックグラウンドに入りました");
+    // [self stopTimers];
+}
 
 @end

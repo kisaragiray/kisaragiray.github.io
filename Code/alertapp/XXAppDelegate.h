@@ -6,4 +6,7 @@
 @property (nonatomic, retain) UINavigationController *settingView;
 @property (nonatomic, retain) UINavigationController *SceneKitview;
 @property (nonatomic, retain) UINavigationController *SystemSoundsview;
+@property (nonatomic, retain) UINavigationController *mapView;
+@property (nonatomic, retain) UINavigationController *testView;
 @end
+

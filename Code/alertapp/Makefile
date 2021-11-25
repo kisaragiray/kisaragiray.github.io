@@ -14,6 +14,8 @@ $(APPLICATION_NAME)_FILES = \
 	HelpViewController.xm \
 	SettingViewController.xm \
 	SceneKitView.xm \
+	MapViewController.mm \
+	TestviewController.mm \
 	LEDSwitch.mm \
 	UIImage+Scale.m \
 	UIBarButtonItem+blocks.m \
@@ -61,6 +63,7 @@ ADDITIONAL_OBJCFLAGS = -fobjc-arc
 TWEAK_NAME = alertappnoti
 $(TWEAK_NAME)_FILES = alertappnoti.xm
 $(TWEAK_NAME)_PRIVATE_FRAMEWORKS = MediaRemote
+$(TWEAK_NAME)_FRAMEWORKS = IOKit
 #$(TWEAK_NAME)_EXTRA_FRAMEWORKS += Cephei
 
 include $(THEOS_MAKE_PATH)/application.mk

@@ -1,6 +1,7 @@
 #import "UIBarButtonItem+blocks.h"
 
 @interface XXRootViewController : UIViewController <WKNavigationDelegate, WKUIDelegate, UNUserNotificationCenterDelegate, UITabBarControllerDelegate, UIPopoverPresentationControllerDelegate>
+
 @property (nonatomic, retain) UILabel *tlabel;
 @property (nonatomic, retain) UIButton *pcappButton;
 @property (nonatomic, retain) UIActivityIndicatorView *IndicatorView;
@@ -19,6 +20,7 @@
 @property (nonatomic, retain) UIAlertController *vaddAlert;
 @property (nonatomic, retain) UIView *sampleView;
 @property (nonatomic, retain) UIView *sampleView2;
+@property (nonatomic, retain) UIView *controlView;
 @property (nonatomic, retain) UIButton *btn;
 @property (nonatomic, retain) UIAlertController *scrollViewaddAlert;
 @property (nonatomic, retain) UILabel *words1;
@@ -44,19 +46,27 @@
 @property (nonatomic, retain) UIImage *backwardImg;
 @property (nonatomic, retain) UIImage *forwardImg;
 
-@property (retain, nonatomic) UILabel *playBackTime;
-@property (retain, nonatomic) UILabel *playBackTotalTime;
+@property (nonatomic, retain) UILabel *playBackTime;
+@property (nonatomic, retain) UILabel *playBackTotalTime;
 
-@property (retain, nonatomic) UISlider *progressBar;
+@property (nonatomic, retain) UISlider *progressBar;
 @property (nonatomic, retain) UIProgressView *tprogressView;
-@property (retain, nonatomic) UISlider *volumeBar;
+@property (nonatomic, retain) UIImage *imageForThumb;
+
+@property (nonatomic, retain) UISlider *volumeBar;
+@property (nonatomic, retain) UIPickerView *picker;
+@property (nonatomic, retain) UIStackView *stackView;
+@property (nonatomic, retain) UITabBar *tabBar;
++ (BOOL)isLandscapeOrientation;
 @end
+
+
 
 @interface NSUserDefaults (PowerControllerAppX)
 - (id)objectForKey:(NSString *)key inDomain:(NSString *)domain;
 - (void)setObject:(id)value forKey:(NSString *)key inDomain:(NSString *)domain;
 @end
 
-
+#define kTimeScale 60.0
 #define PCAImagePath @"/Applications/PowerControllerApp.app/box.png"
 

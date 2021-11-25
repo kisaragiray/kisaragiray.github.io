@@ -376,11 +376,7 @@
 - (void)initAutoScrollLabel {
 	self.autoScrollLabel = [[CBAutoScrollLabel alloc] 
 		initWithFrame:CGRectMake(
-			W / 2 - 185, 
-			50, 
-			400, 
-			50)];
-
+			W / 2 - 185, 50, 400, 50)];
 
 	//self.autoScrollLabel.text = @"Power Controller App Xをインストールして頂き、ありがとうございます😊";
 

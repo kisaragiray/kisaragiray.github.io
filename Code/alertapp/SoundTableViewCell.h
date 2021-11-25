@@ -10,11 +10,11 @@
 
 @interface SoundTableViewCell : UITableViewCell
 
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *soundIdLabel;
-@property (weak, nonatomic) IBOutlet UILabel *fileNameIniPhoneLabel;
-@property (weak, nonatomic) IBOutlet UILabel *fileNameIniPodLabel;
-@property (weak, nonatomic) IBOutlet UILabel *categoryLabel;
-@property (weak, nonatomic) IBOutlet UILabel *descLabel;
+@property (weak, nonatomic) UILabel *nameLabel;
+@property (weak, nonatomic) UILabel *soundIdLabel;
+@property (weak, nonatomic) UILabel *fileNameIniPhoneLabel;
+@property (weak, nonatomic) UILabel *fileNameIniPodLabel;
+@property (weak, nonatomic) UILabel *categoryLabel;
+@property (weak, nonatomic) UILabel *descLabel;
 
 @end

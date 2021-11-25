@@ -1,3 +1,3 @@
 @interface SceneKitView : UIViewController
-@property (nonatomic, retain) NSString *str;;
+@property (nonatomic, retain) NSString *str;
 @end

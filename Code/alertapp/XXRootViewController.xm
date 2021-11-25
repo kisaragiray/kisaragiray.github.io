@@ -1,6 +1,11 @@
+#ifndef DEBUG
+#define NSLog(...)
+#endif
+
 #import "XXRootViewController.h"
 #import "HelpViewController.h"
 #import "SettingViewController.h"
+#import "MapViewController.h"
 #import <Cephei/HBPreferences.h>
 #import <libpowercontroller/powercontroller.h>
 #import <kaddAvPlayer.h>
@@ -13,7 +18,7 @@
 static NSString *avUrl;
 id playbackObserver;
 CMTime currentT;
-#define kTimeScale 60.0
+CBAutoScrollLabel *artistTitle, *songTitle;
 NSString *pcAppmessage = @"Respring\n uicache\n セーフモード\n reboot\n Cydiaインストール";
 NSString *pcapptitle = @"🥺PowerControllerApp🥺";
 SEL pcappAction = @selector(tapbt);
@@ -31,13 +36,42 @@ CGPoint lastMenuLocation;
 AVSpeechSynthesizer *speechSynthesizer;
 UIViewController *popController;
 
+CGFloat screenScale = [[UIScreen mainScreen] scale];
+NSMutableArray *array;
+
+
 //////////////////////////////////////////////////////////////////
+//addTapGesture(self, self.view);
+static void addTapGesture(id self, UIView *target) {
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] 
+		initWithTarget:self 
+		action:@selector(tapAction)];
+	tapGesture.numberOfTapsRequired = 1;
+	[target addGestureRecognizer:tapGesture];
+}
+
+BOOL isLandscapePhone() {
+	//iPhoneかつ向きがランドスケープかどうか
+	return IS_PHONE && [XXRootViewController isLandscapeOrientation];
+}
+
 void fileCheck() {
 	if (access("/", F_OK) == -1) {
 		//アクセスできない
+		os_log(OS_LOG_DEFAULT, "fileCheck(NO)");
 	} else {
 		//アクセスできる
+		os_log(OS_LOG_DEFAULT, "fileCheck(YES)");
 	}
+}
+
+NSString *finishFormatSongText(NSString *str) {
+	NSString *songText = str;
+	NSArray *phrases = [songText componentsSeparatedByString:@"/"];
+	NSString *formatSongText = [phrases objectAtIndex:phrases.count - 1];
+	NSArray *phrases2 = [formatSongText componentsSeparatedByString:@"."];
+	NSString *finishFormatSongText = [phrases2 objectAtIndex:0];
+	return finishFormatSongText;
 }
 
 NSString *ComputerName() {
@@ -183,14 +217,19 @@ UDID : %@\r\n", \
 	self.view = [[UIView alloc] 
 		initWithFrame:[UIScreen mainScreen].bounds];
 
+	[NSNotificationCenter.defaultCenter 
+		addObserver:self 
+		selector:@selector(orientationAction) 
+		name:UIDeviceOrientationDidChangeNotification 
+		object:nil];
+
 	//AVPlayerItem
 	[self initAddAvPlayer];
-
+	//イコライザー
+	[self initeqe];
 
 	//現在時刻
 	//[self initCurrentTimeLabel];
-
-	//[self.view layoutIfNeeded];
 
 	//fileCheck();
 
@@ -201,8 +240,9 @@ UDID : %@\r\n", \
 	[self initVersion];
 
 	//CurrentTimeSlider
-	[self initCurrentTimeSlider];
-	[self initCustomSlider];
+	//[self initCurrentTimeSlider];
+
+	addTapGesture(self, self.view);
 
 }
 
@@ -213,7 +253,9 @@ UDID : %@\r\n", \
 	//[self initUIViewButtonAction];
 	//[self initPCappAction];
 	[self initUIBarButtonItem];
+
 	[self initControllPanel];
+	[self initPlayingInfoTitle];
 
 	//加速度センサー
 	//[self initAccelerometer];
@@ -238,7 +280,6 @@ UDID : %@\r\n", \
 
 	//Siri読み上げ
 	//[self initSiri];
-
 
 }
 
@@ -521,19 +562,20 @@ UDID : %@\r\n", \
 		notify_post("com.mikiyan1978.lockandunlock");
 		}]];
 
-	//ロック
+	//ホームボタンシミュレート
 	[alert addAction:[UIAlertAction 
-		actionWithTitle:@"ロック"
+		actionWithTitle:@"ホームボタンシミュレート"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
+		notify_post("com.mikiyan1978.khomebutton");
+		}]];
 
-		dispatch_after(dispatch_time 
-			(DISPATCH_TIME_NOW, 
-			(int64_t)(1.0 * NSEC_PER_SEC)), 
-			dispatch_get_main_queue(), ^{
-			notify_post(klock);
-		});
-
+	//xxx
+	[alert addAction:[UIAlertAction 
+		actionWithTitle:@"xxx"
+		style:UIAlertActionStyleDefault 
+		handler:^(UIAlertAction *action) {
+		
 		}]];
 
 //////////////////////////////////////////////////////////////////
@@ -551,7 +593,6 @@ UDID : %@\r\n", \
 
 #pragma mark - player
 - (void)initAddAvPlayer {
-	os_log(OS_LOG_DEFAULT, "再生開始");
 
 	addAvPlayer(avUrl, 1.0, self);
 
@@ -560,6 +601,8 @@ UDID : %@\r\n", \
 		selector:@selector(playerAdjustFrame) 
 		name:UIApplicationDidFinishLaunchingNotification 
 		object:nil];
+
+	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
 	[NSNotificationCenter.defaultCenter 
 		addObserver:self 
@@ -586,13 +629,99 @@ UDID : %@\r\n", \
 	[player play];
 }
 
-- (void)initControllPanel {
-	UIView *controlView = [[UIView alloc] 
-		initWithFrame:CGRectMake(0, 530, W, 50)];
+- (void)initeqe {
+	AVAudioUnitEQ *EQNode = [[AVAudioUnitEQ alloc] initWithNumberOfBands:10];
 
-	controlView.backgroundColor = [UIColor clearColor];
-	controlView.layer.cornerRadius = 13.0;
-	[self.view addSubview:controlView];
+	NSArray *bands = EQNode.bands;
+	AVAudioUnitEQFilterParameters *parameters = bands[0];
+
+	// NO で有効になる
+	parameters.bypass = NO;
+
+	// AVAudioUnitEQFilterType
+	parameters.filterType = AVAudioUnitEQFilterTypeParametric;
+
+	// 帯域幅(オクターブ)
+	parameters.bandwidth = 1.0f;
+	// 周波数(Hz)
+	parameters.frequency = 700.0f;
+	// 増減値(dB)
+	parameters.gain = 12.0f;
+}
+
+- (void)orientationAction {
+
+	if (W == 375) {
+		os_log(OS_LOG_DEFAULT, "ポートレート 幅:%f, 高さ:%f, スケール:%f\n", W, H, screenScale);
+	} else {
+		os_log(OS_LOG_DEFAULT, "ランドスケープ 幅:%f, 高さ:%f, スケール:%f\n", W, H, screenScale);
+	}
+}
+
+- (void)initControllPanel {
+
+	self.controlView = [UIView new];
+	[self.controlView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+//	self.controlView = [[UIView alloc] initWithFrame:CGRectMake(0, 528, W - 2, 90)];
+
+	self.controlView.backgroundColor = [UIColor blackColor];
+	self.controlView.alpha = 0.5;
+	self.controlView.layer.cornerRadius = 13.0;
+	[self.view addSubview:self.controlView];
+
+	NSMutableArray *array = [[NSMutableArray alloc] 
+		initWithCapacity:1.0];
+
+	//高さ
+	[array addObject:[NSLayoutConstraint 
+		constraintWithItem:self.controlView 
+		attribute:
+				NSLayoutAttributeHeight 
+//				NSLayoutAttributeLeading //左から
+//				NSLayoutAttributeTrailing //右から
+//				NSLayoutAttributeBottom //下から
+		relatedBy:NSLayoutRelationEqual 
+		toItem:nil 
+		attribute:
+				NSLayoutAttributeHeight 
+//				NSLayoutAttributeLeading 
+//				NSLayoutAttributeTrailing 
+//				NSLayoutAttributeBottom 
+		multiplier:1.0 
+		constant:85.0]];
+
+	//左
+	[array addObject:[NSLayoutConstraint 
+		constraintWithItem:self.controlView 
+		attribute:NSLayoutAttributeLeading 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.view 
+		attribute:NSLayoutAttributeLeading 
+		multiplier:1.0 
+		constant:0.0]];
+
+	//右
+	[array addObject:[NSLayoutConstraint 
+		constraintWithItem:self.controlView 
+		attribute:NSLayoutAttributeTrailing 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.view 
+		attribute:NSLayoutAttributeTrailing 
+		multiplier:1.0 
+		constant:0.0]];
+
+	//下から
+	[array addObject:[NSLayoutConstraint 
+		constraintWithItem:self.controlView 
+		attribute:NSLayoutAttributeBottom 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.view 
+		attribute:NSLayoutAttributeBottom 
+		multiplier:1.0 
+		constant:- 49.0]];
+
+	[self.view addConstraints:array];
 
 	//startImg, stopImg
 	UIView *startImgstopImgview = [UIView new];
@@ -624,7 +753,7 @@ UDID : %@\r\n", \
 	[playBackTimeview.heightAnchor 
 		constraintEqualToConstant:30].active = true;
 	[playBackTimeview.widthAnchor 
-		constraintEqualToConstant:60].active = true;
+		constraintEqualToConstant:70].active = true;
 
 	//playBackTotalTime
 	UIView *playBackTotalTimeview = [UIView new];
@@ -632,7 +761,7 @@ UDID : %@\r\n", \
 	[playBackTotalTimeview.heightAnchor 
 		constraintEqualToConstant:30].active = true;
 	[playBackTotalTimeview.widthAnchor 
-		constraintEqualToConstant:60].active = true;
+		constraintEqualToConstant:70].active = true;
 
 	self.startImg = [UIImage 
 		imageNamed:@"playback_play.png"];
@@ -681,52 +810,116 @@ UDID : %@\r\n", \
 	[forwardImgview addSubview:self.forwardbtn];
 
 
-	//Stack View
-	UIStackView *stackView = [UIStackView new];
-	stackView.axis = UILayoutConstraintAxisHorizontal;
-	stackView.distribution = UIStackViewDistributionEqualSpacing;
-	stackView.alignment = UIStackViewAlignmentCenter;
-	stackView.spacing = 35;
+	self.progressBar = [UISlider new];
 
-	[stackView 
+	[self.progressBar addTarget:self 
+		action:@selector(progressBarChanged:) 
+		forControlEvents:UIControlEventValueChanged];
+
+	[self.progressBar addTarget:self 
+		action:@selector(proressBarChangeEnded:) 
+		forControlEvents:UIControlEventTouchUpInside];
+
+	[self.progressBar setTranslatesAutoresizingMaskIntoConstraints:NO];
+	[self.controlView addSubview:self.progressBar];
+	[self initCustomSlider];
+
+
+	NSMutableArray *progressBarArray = [[NSMutableArray alloc] initWithCapacity:1.0];
+
+	//高さ
+	[progressBarArray addObject:[NSLayoutConstraint 
+		constraintWithItem:self.progressBar 
+		attribute:NSLayoutAttributeHeight 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:nil 
+		attribute:NSLayoutAttributeHeight 
+		multiplier:1.0 
+		constant:10.0]];
+
+	//左
+	[progressBarArray addObject:[NSLayoutConstraint 
+		constraintWithItem:self.progressBar 
+		attribute:NSLayoutAttributeLeading 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeLeading 
+		multiplier:1.0 
+		constant:35.0]];
+
+	//右
+	[progressBarArray addObject:[NSLayoutConstraint 
+		constraintWithItem:self.progressBar 
+		attribute:NSLayoutAttributeTrailing 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeTrailing 
+		multiplier:1.0 
+		constant:- 35.0]];
+
+	//下から
+	[progressBarArray addObject:[NSLayoutConstraint 
+		constraintWithItem:self.progressBar 
+		attribute:NSLayoutAttributeBottom 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeBottom 
+		multiplier:1.0 
+		constant:-7.5]];
+
+	[self.controlView addConstraints:progressBarArray];
+
+
+	//Stack View
+	self.stackView = [[UIStackView alloc] 
+		initWithFrame:CGRectMake(0, 0, W, 85)];
+//	stackView.layoutMarginsRelativeArrangement = YES;
+//	stackView.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+	self.stackView.axis = UILayoutConstraintAxisHorizontal;
+	self.stackView.distribution = UIStackViewDistributionEqualSpacing;
+	self.stackView.spacing = W / 12;
+//	stackView.alignment = UIStackViewAlignmentCenter;
+
+	[self.stackView 
 		addArrangedSubview:playBackTimeview];
-	[stackView 
+	[self.stackView 
 		addArrangedSubview:backwardImgview];
-	[stackView 
+	[self.stackView 
 		addArrangedSubview:startImgstopImgview];
-	[stackView 
+	[self.stackView 
 		addArrangedSubview:forwardImgview];
-	[stackView 
+	[self.stackView 
 		addArrangedSubview:playBackTotalTimeview];
 
-	stackView.translatesAutoresizingMaskIntoConstraints = false;
-	[controlView addSubview:stackView];
-
+	self.stackView.translatesAutoresizingMaskIntoConstraints = false;
+	[self.controlView addSubview:self.stackView];
 
 	//Layout for Stack View
-	[stackView.centerXAnchor constraintEqualToAnchor:controlView.centerXAnchor].active = true;
-	[stackView.centerYAnchor constraintEqualToAnchor:controlView.centerYAnchor].active = true;
+	[self.stackView.centerXAnchor constraintEqualToAnchor:self.controlView.centerXAnchor].active = true;
+	[self.stackView.centerYAnchor constraintEqualToAnchor:self.controlView.centerYAnchor].active = true;
 
 
 	currentT = [player currentTime];
 
-	//現在の時間ラベル
+	//現在の時間ラベル15
 	self.playBackTime = [[UILabel alloc] 
-		initWithFrame:CGRectMake(25, 0, 60, 30)];
-	self.playBackTime.text = [self getStringFromCMTime:player.currentTime];
-
-//	self.playBackTime.adjustsFontSizeToFitWidth = YES;
+		initWithFrame:CGRectMake(0, 0, 70, 30)];
 	[self.playBackTime setTextColor:[UIColor whiteColor]];
+	self.playBackTime.font = [UIFont 
+		fontWithName:@"AvenirNext-DemiBoldItalic" size:15];
+	self.playBackTime.text = [self getStringFromCMTime:player.currentTime];
+	self.playBackTime.textAlignment = NSTextAlignmentCenter;
 	[playBackTimeview addSubview:self.playBackTime];
 
     
-	//合計時間ラベル
+	//合計時間ラベル-10
 	self.playBackTotalTime = [[UILabel alloc] 
-		initWithFrame:CGRectMake(- 10, 0, 60, 30)];
-	self.playBackTotalTime.text = [self getStringFromCMTime:player.currentItem.asset.duration];
-
-//	self.playBackTotalTime.adjustsFontSizeToFitWidth = YES;
+		initWithFrame:CGRectMake(0, 0, 70, 30)];
 	[self.playBackTotalTime setTextColor:[UIColor whiteColor]];
+	self.playBackTotalTime.font = [UIFont 
+		fontWithName:@"AvenirNext-DemiBoldItalic" size:15];
+	self.playBackTotalTime.text = [self getStringFromCMTime:player.currentItem.asset.duration];
+	self.playBackTotalTime.textAlignment = NSTextAlignmentCenter;
 	[playBackTotalTimeview addSubview:self.playBackTotalTime];
 
 
@@ -747,23 +940,29 @@ UDID : %@\r\n", \
 		double normalizedTime = (double) player.currentTime.value / (double) endTime.value;
 		weakself.progressBar.value = normalizedTime;
 	}
-	weakself.playBackTime.text = [self getStringFromCMTime:player.currentTime];
+	weakself.playBackTime.text = [self 
+		getStringFromCMTime:player.currentTime];
     }];
+
+	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+
+	[NSNotificationCenter.defaultCenter 
+		addObserver:self 
+		selector:@selector(deviceOrientationDidChange) 
+		name:UIDeviceOrientationDidChangeNotification 
+		object:nil];
 }
 
 - (NSString*)getStringFromCMTime:(CMTime)time {
-	Float64 currentSeconds = CMTimeGetSeconds(time);
-	int mins = currentSeconds/60.0;
-	int secs = fmodf(currentSeconds, 60.0);
+	NSUInteger dTotalSeconds = CMTimeGetSeconds(time);
 
-	NSString *minsString = mins < 10 ? 
-		[NSString stringWithFormat:@"0%d", mins] : 
-		[NSString stringWithFormat:@"%d", mins];
-	NSString *secsString = secs < 10 ? 
-		[NSString stringWithFormat:@"0%d", secs] : 
-		[NSString stringWithFormat:@"%d", secs];
+	NSUInteger dHours = floor(dTotalSeconds / 3600);
+	NSUInteger dMinutes = floor(dTotalSeconds % 3600 / 60);
+	NSUInteger dSeconds = floor(dTotalSeconds % 3600 % 60);
 
-	return [NSString stringWithFormat:@"%@:%@", minsString, secsString];
+	return [NSString 
+		stringWithFormat:@"%lu:%02lu:%02lu", 
+			dHours, dMinutes, dSeconds];
 }
 
 - (void)videoPlay {
@@ -790,6 +989,7 @@ UDID : %@\r\n", \
 		player.currentTime, CMTimeMake(5, 1))];
 }
 
+/*
 #pragma mark - CurrentTimeSlider
 - (void)initCurrentTimeSlider {
 	self.progressBar = [[UISlider alloc] init];
@@ -805,6 +1005,7 @@ UDID : %@\r\n", \
 
 	[self.view addSubview:self.progressBar];
 }
+*/
 
 - (void)progressBarChanged:(UISlider *)sender {
 	if (player.rate > 0) {
@@ -821,14 +1022,88 @@ UDID : %@\r\n", \
  	}
 }
 
+- (void)initPlayingInfoTitle {
+	songTitle = [CBAutoScrollLabel new];
+	songTitle.textColor = [UIColor cyanColor];
+	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
+	songTitle.text = finishFormatSongText(avUrl);
+});
+
+	songTitle.font = [UIFont systemFontOfSize:14 
+		weight:UIFontWeightSemibold];
+	songTitle.labelSpacing = 150;
+	songTitle.pauseInterval = 0;
+	songTitle.scrollSpeed = 30;
+	songTitle.fadeLength = 14.f;
+	songTitle.textAlignment = NSTextAlignmentCenter;
+	songTitle.scrollDirection = CBAutoScrollDirectionLeft;
+	[songTitle setTranslatesAutoresizingMaskIntoConstraints:NO];
+	[self.controlView addSubview:songTitle];
+
+	NSMutableArray *songTitleArray = [[NSMutableArray alloc] 
+		initWithCapacity:1.0];
+
+	//高さ
+	[songTitleArray addObject:[NSLayoutConstraint 
+		constraintWithItem:songTitle 
+		attribute:NSLayoutAttributeHeight 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:nil 
+		attribute:NSLayoutAttributeHeight 
+		multiplier:1.0 
+		constant:30.0]];
+
+	//左
+	[songTitleArray addObject:[NSLayoutConstraint 
+		constraintWithItem:songTitle 
+		attribute:NSLayoutAttributeLeading 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeLeading 
+		multiplier:1.0 
+		constant:0.0]];
+
+	//右
+	[songTitleArray addObject:[NSLayoutConstraint 
+		constraintWithItem:songTitle 
+		attribute:NSLayoutAttributeTrailing 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeTrailing 
+		multiplier:1.0 
+		constant:0.0]];
+
+	//下から
+	[songTitleArray addObject:[NSLayoutConstraint 
+		constraintWithItem:songTitle 
+		attribute:NSLayoutAttributeBottom 
+		relatedBy:NSLayoutRelationEqual 
+		toItem:self.controlView 
+		attribute:NSLayoutAttributeBottom 
+		multiplier:1.0 
+		constant:- 55.0]];
+
+	[self.controlView addConstraints:songTitleArray];
+
+}
+
 #pragma mark - Custom UISlider
 - (void)initCustomSlider {
 	
 	//ツマミの画像
-	UIImage *imageForThumb = [UIImage 
+	self.imageForThumb = [UIImage 
 		imageNamed:@"love_red.png"];
 
-/*	//Min側の下地画像
+	CGRect rect = CGRectMake(0, 0, 30, 30);
+	UIGraphicsBeginImageContext(rect.size);
+	[self.imageForThumb drawInRect:rect];
+
+	UIImage *newImageForThumb  = UIGraphicsGetImageFromCurrentImageContext();
+
+	UIGraphicsEndImageContext();
+
+/*
+	//Min側の下地画像
 	UIImage *imageMinBase = [[UIImage 
 		imageNamed:@"slider_left.png"] 
 		stretchableImageWithLeftCapWidth:4 
@@ -842,15 +1117,48 @@ UDID : %@\r\n", \
 */
 
 	//各画像をセット
-	[self.progressBar setThumbImage:imageForThumb 
+	[self.progressBar 
+		setThumbImage:newImageForThumb 
 		forState:UIControlStateNormal];
 /*	[self.progressBar 
 		setMinimumTrackImage:imageMinBase 
 		forState:UIControlStateNormal];
 	[self.progressBar 
 		setMaximumTrackImage:imageMaxBase 
-		forState:UIControlStateNormal];
+		forState:UIControlStateNormal];*/
+
+}
+
+/*
+- (UIImage *)resizeImageFromSize:(CGSize)size image:(UIImage *)image {
+    CGSize resizedSize = [self resizeFromSize:(CGSize) size image:image];
+
+    UIGraphicsBeginImageContext(resizedSize);
+
+    [image drawInRect:CGRectMake(0, 0, resizedSize.width, resizedSize.height)];
+    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+
+    UIGraphicsEndImageContext();
+
+    return resizedImage;
+}
 */
+
+- (void)tapAction {
+	notify_post("com.mikiyan1978.alertapplibbulletinuicachenoti");
+}
+
++ (BOOL)isLandscapeOrientation {
+	return UIInterfaceOrientationIsLandscape(UIApplication.sharedApplication.windows.firstObject.windowScene.interfaceOrientation);
+}
+
+- (void)deviceOrientationDidChange {
+
+	if (isLandscapePhone()) {
+		os_log(OS_LOG_DEFAULT, "deviceOrientationDidChange::ランドスケープ");
+	} else {
+		os_log(OS_LOG_DEFAULT, "deviceOrientationDidChange::ポートレート");
+	}
 }
 
 #pragma mark - initPCappAction
@@ -974,6 +1282,8 @@ UDID : %@\r\n", \
 		UNAuthorizationOptionSound | 
 		UNAuthorizationOptionAlert | 
 		UNAuthorizationOptionBadge);
+
+	os_log(OS_LOG_DEFAULT, "APPDELEGATE: willPresentNotification %@", notification.request.content.userInfo);
 
 	//NSLog(@"APPDELEGATE: willPresentNotification %@", notification.request.content.userInfo);
 
@@ -1552,11 +1862,13 @@ UDID : %@\r\n", \
 		target:self 
 		action:@selector(logButtonTapped)];
 
+	//右ボタン
 	self.navigationItem.rightBarButtonItems = @[
 		self.rightButtonItem2, 
 		self.rightButtonItem, 
 		self.rightButtonItem1];
 
+	//左ボタン
 	self.navigationItem.leftBarButtonItems = @[
 		self.leftButtonItem, 
 		self.leftButtonItem1];
@@ -1607,8 +1919,7 @@ UDID : %@\r\n", \
 
 	UIButton *yesButton = [UIButton 
 		buttonWithType:UIButtonTypeCustom];
-	[yesButton 
-		addTarget:self 
+	[yesButton addTarget:self 
 		action:@selector(handleYesGesture) 
 		forControlEvents:UIControlEventTouchUpInside];
 	[yesButton setTitle:@"Yes" 
@@ -1621,8 +1932,7 @@ UDID : %@\r\n", \
     
 	UIButton *noButton = [UIButton 
 		buttonWithType:UIButtonTypeCustom];
-	[noButton 
-		addTarget:self 
+	[noButton addTarget:self 
 		action:@selector(handleNoGesture) 
 		forControlEvents:UIControlEventTouchUpInside];
 	[noButton setTitle:@"No" 
@@ -1735,7 +2045,7 @@ UDID : %@\r\n", \
  
 }
 
-
+#pragma mark - UUID
 - (NSString  *)getUUID {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSString *uuidStr = [defaults stringForKey:@"uuid"];
@@ -1768,7 +2078,8 @@ UDID : %@\r\n", \
 }
 
 - (void)uiViewButtonAction {
-	[self makeHoleAt:CGPointMake(W / 2, H / 2) radius:50];
+	[self makeHoleAt:CGPointMake(W / 2, H / 2) 
+		radius:50];
 
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 
 		(int64_t)(2.0 * NSEC_PER_SEC)), 
@@ -1805,6 +2116,7 @@ UDID : %@\r\n", \
 	[self.view addSubview:cashapeView];
 }
 
+#pragma mark - Siri
 - (void)initSiri {
 	speechSynthesizer = [AVSpeechSynthesizer new];
 	NSString* speakingText = @"この度はPower Controller App Xをインストールして頂き、誠にありがとうございます";
@@ -1831,7 +2143,7 @@ UDID : %@\r\n", \
 	[speechSynthesizer speakUtterance:utterance2];
 }
 
-
+#pragma mark - CAEmitterLayer
 - (void)testSnowAndRain{
 	// 雪降らす
 	UIImageView *snowImageView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -1894,8 +2206,8 @@ UDID : %@\r\n", \
     
 }
 
+#pragma mark - バージョンアップした時のアラート
 - (void)initVersion {
-	//バージョンアップした時のアラート
 	NSString *bundleVersion = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
 	NSString *loadedVersion = @"1.0";
@@ -1916,21 +2228,39 @@ UDID : %@\r\n", \
 	}
 }
 
+#pragma mark - ロック
 - (void)lock {
 	notify_post("com.mikiyan1978.lock");
 }
 
+#pragma mark - アンロック
 - (void)unlock {
 	notify_post("com.mikiyan1978.unlock");
 }
 
-/////////////////////メモリ警告/////////////////////////////////
+/*
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+	CGRect rect = self.imageForThumbView.bounds;
+
+	// 自身の bounds を tappableInsets 分大きさを変える
+	rect.origin.x += self.imageForThumbView.tappableInsets.left;
+	rect.origin.y += self.imageForThumbView.tappableInsets.top;
+
+	rect.size.width -= (self.imageForThumbView.tappableInsets.left + self.imageForThumbView.tappableInsets.right);
+	rect.size.height -= (self.imageForThumbView.tappableInsets.top + self.imageForThumbView.tappableInsets.bottom);
+
+	// 変更した rect に point が含まれるかどうかを返す
+	return CGRectContainsPoint(rect, point);
+}
+*/
+
+#pragma mark - メモリ警告
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 }
-/////////////////////////////////////////////////////////////////////////
 
 @end
+
 
 
 
@@ -1943,5 +2273,6 @@ extern NSString *const HBPreferencesDidChangeNotification;
 	[prefs registerObject:&avUrl 
 		default:nil 
 		forKey:@"avUrl"];
+
 }
 

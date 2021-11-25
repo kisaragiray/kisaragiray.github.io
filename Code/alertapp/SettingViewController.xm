@@ -1,7 +1,6 @@
 #import "XXRootViewController.h"
 #import "HelpViewController.h"
 #import "SettingViewController.h"
-#import <CFUserNotificationHandler/CFUserNotificationHandler.h>
 @import SceneKit;
 
 SCNScene *scene;
@@ -57,7 +56,7 @@ SCNNode *cameraNode;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return 60;
+	return 45;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,7 +97,8 @@ SCNNode *cameraNode;
 		addCFNotiAlert:cAlert 
 		title:@"タップされたのは→" 
 		alertMessage:[NSString 
-			stringWithFormat:@"%@",cell.textLabel.text] 
+			stringWithFormat:@"%@", 
+				cell.textLabel.text] 
 		yesStr:@"yes" 
 		cancelStr:@"cancel" 
 		yesActionHandler:^(){

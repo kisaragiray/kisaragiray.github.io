@@ -1,6 +1,19 @@
 #import "alertappnoti.h"
 
-NSString *soundPath = @"/System/Library/Audio/UISounds/tweet_sent.caf";
+extern "C" {
+	typedef uint32_t IOHIDEventOptionBits;
+
+	typedef struct __IOHIDEvent *IOHIDEventRef;
+//	typedef CFTypeRef IOHIDEventRef;
+
+	IOHIDEventRef IOHIDEventCreateKeyboardEvent(
+		CFAllocatorRef allocator, 
+		AbsoluteTime timeStamp, 
+		uint16_t usagePage, 
+		uint16_t usage, 
+		Boolean down, 
+		IOHIDEventOptionBits flags);
+}
 
 //libnotifications
 void alertapplibnotificationsuicachenoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -27,6 +40,8 @@ void alertapplibnotificationsuicachenoti(CFNotificationCenterRef center, void *o
 }
 
 //uicache通知
+NSString *soundPath = @"/System/Library/Audio/UISounds/tweet_sent.caf";
+
 void alertapplibbulletinuicachenoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	[[%c(JBBulletinManager) sharedInstance] 
@@ -64,6 +79,16 @@ static void alertappsbreload(CFNotificationCenterRef center, void *observer, CFS
 	[task launch];
 }
 
+//sbreload
+static void sbreload(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	NSTask *task = [NSTask new];
+	[task setLaunchPath:@"/bin/sh"];
+	[task setArguments:[NSArray arrayWithObjects:
+		@"-c", 
+		@"sbreload", nil]];
+	[task launch];
+}
+
 //起動通知
 static void activeNoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	[[%c(JBBulletinManager) sharedInstance] 
@@ -90,15 +115,6 @@ static void rebootUserspace(CFNotificationCenterRef center, void *observer, CFSt
 	[task launch];
 }
 
-//sbreload
-static void sbreload(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-	NSTask *task = [NSTask new];
-	[task setLaunchPath:@"/bin/sh"];
-	[task setArguments:[NSArray arrayWithObjects:
-		@"-c", 
-		@"sbreload", nil]];
-	[task launch];
-}
 
 //スクショ
 static void takeScreenshot(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -133,6 +149,26 @@ void kNextTrack(CFNotificationCenterRef center, void *observer, CFStringRef name
 //kMRPreviousTrack
 void kPreviousTrack(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
+}
+
+//Home Button Click
+void khomebutton(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+
+	uint64_t abTime = mach_absolute_time();
+
+	IOHIDEventRef event = IOHIDEventCreateKeyboardEvent(
+		kCFAllocatorDefault, 
+		*(AbsoluteTime *)&abTime, 
+		0xC, 0x40, YES, 0);
+
+	[[[UIApplication sharedApplication] homeHardwareButton] emulateHomeButtonEventsIfNeeded:event];
+
+	CFRelease(event);
+}
+
+//xxxxxxxxxx
+void xxx(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	
 }
 
 %dtor {
@@ -196,6 +232,15 @@ void kPreviousTrack(CFNotificationCenterRef center, void *observer, CFStringRef 
 	CFNotificationCenterRemoveObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.kPreviousTrack"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.khomebutton"), NULL);
+
+	CFNotificationCenterRemoveObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFSTR("com.mikiyan1978.xxx"), NULL);
+
 }
 
 
@@ -303,5 +348,17 @@ void kPreviousTrack(CFNotificationCenterRef center, void *observer, CFStringRef 
 		CFSTR("com.mikiyan1978.kPreviousTrack"), NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		khomebutton, 
+		CFSTR("com.mikiyan1978.khomebutton"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
+
+
+	CFNotificationCenterAddObserver(
+	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+		xxx, 
+		CFSTR("com.mikiyan1978.xxx"), NULL, 
+	CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 

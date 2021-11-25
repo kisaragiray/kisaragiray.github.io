@@ -16,6 +16,36 @@
 			<key>footerText</key>
 			<string></string>
 			<key>label</key>
+			<string>動画ファイル選択</string>
+		</dict>
+<!--		<dict>
+			<key>PostNotification</key>
+			<string>com.mikiyan1978.alertapppref/preferences.changed</string>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>default</key>
+			<string>None</string>
+			<key>defaults</key>
+			<string>com.mikiyan1978.alertapppref</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>key</key>
+			<string>avUrl</string>
+			<key>label</key>
+			<string>動画ファイル選択</string>
+			<key>set</key>
+			<string>previewAndSet:forSpecifier:</string>
+			<key>titlesDataSource</key>
+			<string>getValues:</string>
+			<key>valuesDataSource</key>
+			<string>getValues:</string>
+		</dict>-->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string></string>
+			<key>label</key>
 			<string>動画選択</string>
 		</dict>
 		<dict>
@@ -32,7 +62,7 @@
 			<key>placeholder</key>
 			<string>動画パスを入力してください</string>
 		</dict>
-		<dict>
+<!--		<dict>
 			<key>cell</key>
 			<string>PSLinkListCell</string>
 			<key>cellClass</key>
@@ -60,7 +90,7 @@
 			</array>
 			<key>useSearchBar</key>
 			<true/>
-		</dict>
+		</dict>-->
 	</array>
 	<key>title</key>
 	<string>PowerControllerApp</string>
