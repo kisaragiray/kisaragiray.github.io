@@ -19,12 +19,12 @@
 	MKPointAnnotation *pointAnnotation = [MKPointAnnotation new];
 
 	CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(
-		35.8291431, 
-		139.6505896);
+		34.8291431, 
+		138.6505896);
 	pointAnnotation.coordinate = coordinate;
 
-	pointAnnotation.title = @"ENE's";
-	pointAnnotation.subtitle = @"私の職場です";
+	pointAnnotation.title = @"";
+	pointAnnotation.subtitle = @"";
 	[self.mkMap addAnnotation:pointAnnotation];
 
 	[self.mkMap setCenterCoordinate:coordinate 
