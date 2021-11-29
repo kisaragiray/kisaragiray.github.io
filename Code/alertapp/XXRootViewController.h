@@ -18,8 +18,6 @@
 @property (nonatomic, retain) UIAlertController *noAccessAlert;
 @property (nonatomic, retain) UIAlertController *addAlert;
 @property (nonatomic, retain) UIAlertController *vaddAlert;
-@property (nonatomic, retain) UIView *sampleView;
-@property (nonatomic, retain) UIView *sampleView2;
 @property (nonatomic, retain) UIView *controlView;
 @property (nonatomic, retain) UIButton *btn;
 @property (nonatomic, retain) UIAlertController *scrollViewaddAlert;

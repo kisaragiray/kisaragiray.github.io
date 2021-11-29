@@ -8,5 +8,6 @@
 @property (nonatomic, retain) UINavigationController *SystemSoundsview;
 @property (nonatomic, retain) UINavigationController *mapView;
 @property (nonatomic, retain) UINavigationController *testView;
+@property (nonatomic, retain) UINavigationController *stackView;
 @end
 

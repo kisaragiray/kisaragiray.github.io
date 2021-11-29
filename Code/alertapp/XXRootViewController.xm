@@ -15,6 +15,7 @@
 #import "LEDSwitch.h"
 #import "SnowView.h"
 
+#ifndef ALERTAPP
 static NSString *avUrl;
 id playbackObserver;
 CMTime currentT;
@@ -226,7 +227,7 @@ UDID : %@\r\n", \
 	//AVPlayerItem
 	[self initAddAvPlayer];
 	//イコライザー
-	[self initeqe];
+//	[self initeqe];
 
 	//現在時刻
 	//[self initCurrentTimeLabel];
@@ -261,10 +262,7 @@ UDID : %@\r\n", \
 	//[self initAccelerometer];
 	//[self setupAccelerometer];
 
-	//点滅view
-	//[self initSampleView];
-	//[self fadeOut:self.sampleView];
-	//[self fadeOut:self.sampleView2];
+
 
 	//UISwitch
 	//LEDSwitch *ledSwitch = [LEDSwitch new];
@@ -275,8 +273,7 @@ UDID : %@\r\n", \
 	//UIBarButtonItem
 	//[self initToolbarItem];
 
-	//UIStackView
-	//[self initStackView];
+
 
 	//Siri読み上げ
 	//[self initSiri];
@@ -575,8 +572,18 @@ UDID : %@\r\n", \
 		actionWithTitle:@"xxx"
 		style:UIAlertActionStyleDefault 
 		handler:^(UIAlertAction *action) {
-		
-		}]];
+
+		[WHToast setMaskColor:RGBA(255, 0, 255, 0.7)];
+		[WHToast showImage:[UIImage 
+			imageNamed:@"line"] 
+			message:@"自定义originY显示图片和文字" 
+			originY:0 
+			duration:2.5 
+			finishHandler:^{
+
+			}];
+
+	}]];
 
 //////////////////////////////////////////////////////////////////
 
@@ -1502,195 +1509,6 @@ UDID : %@\r\n", \
 		completion:nil];
 }
 
-//点滅view
-- (void)initSampleView {
-/////////////////////////////////////////////////////////////////////////
-	//NSLayoutAttributeTop
-	//NSLayoutAttributeLeft
-	//NSLayoutAttributeRight
-	//NSLayoutAttributeBottom
-	//NSLayoutAttributeLeading
-	//NSLayoutAttributeTrailing
-	//NSLayoutAttributeWidth
-	//NSLayoutAttributeHeight
-	//NSLayoutAttributeCenterX
-	//NSLayoutAttributeCenterY
-/////////////////////////////////////////////////////////////////////////
-	self.sampleView = [UIView new];
-	self.sampleView2 = [UIView new];
-
-	self.sampleView.translatesAutoresizingMaskIntoConstraints = NO;
-	self.sampleView2.translatesAutoresizingMaskIntoConstraints = NO;
-
-	//self.sampleView.backgroundColor = [self randomColor];
-	self.sampleView.layer.cornerRadius = 25.5;
-	[self.view addSubview:self.sampleView];
-
-	self.sampleView2.backgroundColor = [self randomColor];
-	self.sampleView2.layer.cornerRadius = 25.5;
-	[self.view addSubview:self.sampleView2];
-
-	//上 sampleView
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView 
-		attribute:NSLayoutAttributeTop 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeTop 
-		multiplier:1.0 
-		constant:280.0].active = YES;
-
-	//左 sampleView
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView 
-		attribute:NSLayoutAttributeLeading 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeLeading 
-		multiplier:1.0 
-		constant:30.0].active = YES;
-
-	//下 sampleView
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView 
-		attribute:NSLayoutAttributeHeight 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeHeight 
-		multiplier:0.2 
-		constant:0.0].active = YES;
-
-	//横幅 sampleView
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView 
-		attribute:NSLayoutAttributeWidth 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeWidth 
-		multiplier:0.4 
-		constant:0.0].active = YES;
-
-
-	//上 sampleView2
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView2 
-		attribute:NSLayoutAttributeTop 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeTop 
-		multiplier:1.0 
-		constant:280.0].active = YES;
-
-	//右 sampleView2
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView2 
-		attribute:NSLayoutAttributeTrailing 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeTrailing 
-		multiplier:1.0 
-		constant:-30.0].active = YES;
-
-	//下 sampleView2
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView2 
-		attribute:NSLayoutAttributeHeight 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeHeight 
-		multiplier:0.2 
-		constant:0.0].active = YES;
-
-	//横幅 sampleView2
-	[NSLayoutConstraint 
-		constraintWithItem:self.sampleView2 
-		attribute:NSLayoutAttributeWidth 
-		relatedBy:NSLayoutRelationEqual 
-		toItem:self.view 
-		attribute:NSLayoutAttributeWidth 
-		multiplier:0.4 
-		constant:0.0].active = YES;
-}
-
-//UIStackView
-- (void)initStackView {
-	UIView *mainView = [[UIView alloc] 
-		initWithFrame:CGRectMake(
-			0, 
-			H / 2 - 150, 
-			W, //wide
-			50 //height
-		)];
-
-	mainView.backgroundColor = [self randomColor];
-	mainView.layer.cornerRadius = 20.0;
-	[self.view addSubview:mainView];
-
-	//view 1
-	UIView *view1 = [UIView new];
-	view1.backgroundColor = [self randomColor];
-	[view1.heightAnchor 
-		constraintEqualToConstant:15].active = true;
-	[view1.widthAnchor 
-		constraintEqualToConstant:280].active = true;
-
-	//View 2
-	UIView *view2 = [UIView new];
-	view2.backgroundColor = [self randomColor];
-	[view2.heightAnchor 
-		constraintEqualToConstant:15].active = true;
-	[view2.widthAnchor 
-		constraintEqualToConstant:280].active = true;
-
-	//View 3
-	UIView *view3 = [UIView new];
-	view3.backgroundColor = [self randomColor];
-	[view3.heightAnchor 
-		constraintEqualToConstant:15].active = true;
-	[view3.widthAnchor 
-		constraintEqualToConstant:280].active = true;
-
-	//Stack View
-	UIStackView *stackView = [UIStackView new];
-	stackView.axis = UILayoutConstraintAxisVertical;
-	stackView.distribution = UIStackViewDistributionEqualSpacing;
-	stackView.alignment = UIStackViewAlignmentCenter;
-	stackView.spacing = 15;
-	[stackView addArrangedSubview:view1];
-	[stackView addArrangedSubview:view2];
-	[stackView addArrangedSubview:view3];
-	stackView.translatesAutoresizingMaskIntoConstraints = false;
-	[mainView addSubview:stackView];
-
-	//Layout for Stack View
-	[stackView.centerXAnchor constraintEqualToAnchor:mainView.centerXAnchor].active = true;
-	[stackView.centerYAnchor constraintEqualToAnchor:mainView.centerYAnchor].active = true;
-}
-
-- (void)fadeOut:(UIView *)target {
-	[UIView animateWithDuration:0.1f 
-		delay:0.0 
-		options:UIViewAnimationOptionCurveEaseIn 
-		animations:^{
-			self.sampleView.backgroundColor = [self randomColor];
-			target.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[self fadeIn:target];
-	}];
-}
-
-- (void)fadeIn:(UIView *)target {
-	[UIView animateWithDuration:0.1f 
-		delay:0.0 
-		options:UIViewAnimationOptionCurveEaseIn 
-		animations:^{
-			self.sampleView.backgroundColor = [self randomColor];
-			target.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		[self fadeOut:target];
-	}];
-}
-
 
 /*
 - (void)initButton {
@@ -2194,16 +2012,16 @@ UDID : %@\r\n", \
     //速度値の微調整値
     emitterCell.velocityRange = 3.f;
     //y轴加速度
-    emitterCell.yAcceleration = 2.f;//这里的设置表示在y轴正方向有个2.f大小的加速度，模拟重力
-    //発射角度
-    emitterCell.emissionRange = M_PI * M_1_PI;// 暂时不理解
-    //パーティクルの色を設定します
-    emitterCell.color = [UIColor blueColor].CGColor;
-    //画像を設定する
-    emitterCell.contents = (__bridge id _Nullable)([UIImage imageNamed:@"snow"].CGImage);// 我暂时不理解图片的要求是什么？
-    //让CAEmitterCell与CAEmitterLayer产生关联
-    emitterLayer.emitterCells = @[emitterCell];//用的数组，说明一个CAEmitterLayer可以关联多个CAEmitterCell
-    
+	emitterCell.yAcceleration = 2.f;//这里的设置表示在y轴正方向有个2.f大小的加速度，模拟重力
+	//発射角度
+	emitterCell.emissionRange = M_PI * M_1_PI;// 暂时不理解
+	//パーティクルの色を設定します
+	emitterCell.color = [UIColor blueColor].CGColor;
+	//画像を設定する
+	emitterCell.contents = (__bridge id _Nullable)([UIImage imageNamed:@"snow"].CGImage);// 我暂时不理解图片的要求是什么？
+	//让CAEmitterCell与CAEmitterLayer产生关联
+	emitterLayer.emitterCells = @[emitterCell];//用的数组，说明一个CAEmitterLayer可以关联多个CAEmitterCell
+
 }
 
 #pragma mark - バージョンアップした時のアラート
@@ -2254,6 +2072,11 @@ UDID : %@\r\n", \
 }
 */
 
+
+- (void)dealloc {
+	
+}
+
 #pragma mark - メモリ警告
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
@@ -2275,4 +2098,4 @@ extern NSString *const HBPreferencesDidChangeNotification;
 		forKey:@"avUrl"];
 
 }
-
+#endif

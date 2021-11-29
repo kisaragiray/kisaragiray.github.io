@@ -3,7 +3,9 @@ include $(THEOS)/makefiles/common.mk
 TOOL_NAME = postinst prerm
 
 postinst_FILES = pkg-actions.mm
-postinst_CFLAGS += -fobjc-arc -fvisibility=hidden -DPOSTINST
+postinst_CFLAGS += -fobjc-arc \
+	-fvisibility=hidden \
+	-DPOSTINST
 postinst_FRAMEWORKS = CoreFoundation
 postinst_INSTALL_PATH = /DEBIAN
 postinst_CODESIGN_FLAGS = -Sentitlements.plist

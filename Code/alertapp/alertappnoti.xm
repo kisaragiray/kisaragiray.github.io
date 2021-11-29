@@ -19,7 +19,7 @@ extern "C" {
 void alertapplibnotificationsuicachenoti(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	void *handle = dlopen("/usr/lib/libnotifications.dylib", RTLD_LAZY);
-	if (handle != NULL) {                                      
+	if (handle != NULL) {
 
 	NSString *uid = [[NSUUID UUID] UUIDString];
 
@@ -171,6 +171,10 @@ void xxx(CFNotificationCenterRef center, void *observer, CFStringRef name, const
 	
 }
 
+#define RM_OBSERVER(v) CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, CFSTR("v"), NULL);
+
+#define ADD_OBSERVER(noti, v) CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)noti, CFSTR("v"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+
 %dtor {
 
 	CFNotificationCenterRemoveObserver(
@@ -233,9 +237,13 @@ void xxx(CFNotificationCenterRef center, void *observer, CFStringRef name, const
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.kPreviousTrack"), NULL);
 
+/*
 	CFNotificationCenterRemoveObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
 	CFSTR("com.mikiyan1978.khomebutton"), NULL);
+*/
+
+	RM_OBSERVER(com.mikiyan1978.khomebutton)
 
 	CFNotificationCenterRemoveObserver(
 	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
@@ -249,116 +257,154 @@ void xxx(CFNotificationCenterRef center, void *observer, CFStringRef name, const
 
 	//uicache完了
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		(CFNotificationCallback)alertapplibnotificationsuicachenoti, 
-		CFSTR("com.mikiyan1978.alertapplibnotificationsuicachenoti"), NULL, 
+		CFSTR("com.mikiyan1978.alertapplibnotificationsuicachenoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	//libbulletin
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		(CFNotificationCallback)alertapplibbulletinuicachenoti, 
-		CFSTR("com.mikiyan1978.alertapplibbulletinuicachenoti"), NULL, 
+		CFSTR("com.mikiyan1978.alertapplibbulletinuicachenoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		(CFNotificationCallback)alertapplibbulletin14upnoti, 
-		CFSTR("com.mikiyan1978.alertapplibbulletin14upnoti"), NULL, 
+		CFSTR("com.mikiyan1978.alertapplibbulletin14upnoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		(CFNotificationCallback)alertapplibbulletin14downnoti, 
-		CFSTR("com.mikiyan1978.alertapplibbulletin14downnoti"), NULL, 
+		CFSTR("com.mikiyan1978.alertapplibbulletin14downnoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		alertappsbreload, 
-		CFSTR("com.mikiyan1978.alertappsbreload"), NULL, 
+		CFSTR("com.mikiyan1978.alertappsbreload"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		activeNoti, 
-		CFSTR("com.mikiyan1978.activenoti"), NULL, 
+		CFSTR("com.mikiyan1978.activenoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		noActiveNoti, 
-		CFSTR("com.mikiyan1978.noactivenoti"), NULL, 
+		CFSTR("com.mikiyan1978.noactivenoti"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		rebootUserspace, 
-		CFSTR("com.mikiyan1978.rebootUserspace"), NULL, 
+		CFSTR("com.mikiyan1978.rebootUserspace"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		sbreload, 
-		CFSTR("com.mikiyan1978.sbreload"), NULL, 
+		CFSTR("com.mikiyan1978.sbreload"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		takeScreenshot, 
-		CFSTR("com.mikiyan1978.takeScreenshot"), NULL, 
+		CFSTR("com.mikiyan1978.takeScreenshot"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		lock, 
-		CFSTR("com.mikiyan1978.lock"), NULL, 
+		CFSTR("com.mikiyan1978.lock"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		unlock, 
-		CFSTR("com.mikiyan1978.unlock"), NULL, 
+		CFSTR("com.mikiyan1978.unlock"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		lockandunlock, 
-		CFSTR("com.mikiyan1978.lockandunlock"), NULL, 
+		CFSTR("com.mikiyan1978.lockandunlock"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		kNextTrack, 
-		CFSTR("com.mikiyan1978.kNextTrack"), NULL, 
+		CFSTR("com.mikiyan1978.kNextTrack"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		kPreviousTrack, 
-		CFSTR("com.mikiyan1978.kPreviousTrack"), NULL, 
+		CFSTR("com.mikiyan1978.kPreviousTrack"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 
+/*
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		khomebutton, 
-		CFSTR("com.mikiyan1978.khomebutton"), NULL, 
+		CFSTR("com.mikiyan1978.khomebutton"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
+*/
+
+	ADD_OBSERVER(khomebutton, com.mikiyan1978.khomebutton)
 
 
 	CFNotificationCenterAddObserver(
-	CFNotificationCenterGetDarwinNotifyCenter(), NULL, 
+	CFNotificationCenterGetDarwinNotifyCenter(), 
+		NULL, 
 		xxx, 
-		CFSTR("com.mikiyan1978.xxx"), NULL, 
+		CFSTR("com.mikiyan1978.xxx"), 
+		NULL, 
 	CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 

@@ -6,8 +6,8 @@
 #import "SystemSounds.h"
 #import "MapViewController.h"
 #import "TestviewController.h"
+#import "StackViewController.h"
 
-#import <libpowercontroller/powercontroller.h>
 
 @implementation XXAppDelegate
 
@@ -47,6 +47,9 @@
 	_testView.tabBarItem.image=[UIImage imageNamed:@""];
 	_testView.tabBarItem.title = @"test";
 
+	_stackView = [[UINavigationController alloc] initWithRootViewController:[StackViewController new]];
+	_stackView.tabBarItem.image=[UIImage imageNamed:@""];
+	_stackView.tabBarItem.title = @"stackView";
 
 	[localViewControllersArray 
 		addObject:_rootViewController];
@@ -56,6 +59,7 @@
 	[localViewControllersArray addObject:_SystemSoundsview];
 	[localViewControllersArray addObject:_mapView];
 	[localViewControllersArray addObject:_testView];
+	[localViewControllersArray addObject:_stackView];
 
 	tabBars.viewControllers = localViewControllersArray;
 	tabBars.view.autoresizingMask=(UIViewAutoresizingFlexibleHeight);

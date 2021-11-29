@@ -2,6 +2,7 @@ THEOS_DEVICE_IP = 127.0.0.1
 ARCHS = arm64 arm64e
 TARGET = iphone:clang:latest:14.0
 FINALPACKAGE = 1
+FOR_RELEASE = 1
 #DEBUG = 1
 
 include $(THEOS)/makefiles/common.mk
@@ -16,6 +17,7 @@ $(APPLICATION_NAME)_FILES = \
 	SceneKitView.xm \
 	MapViewController.mm \
 	TestviewController.mm \
+	StackViewController.mm \
 	LEDSwitch.mm \
 	UIImage+Scale.m \
 	UIBarButtonItem+blocks.m \
@@ -32,7 +34,8 @@ $(APPLICATION_NAME)_FILES = \
 	$(shell find $(THEOS)/include/CFUserNotificationHandler -name '*.mm') \
 	$(shell find $(THEOS)/include/AutoScrollLabel -name '*.mm') \
 	$(shell find $(THEOS)/include/CAEmitterLayerView -name '*.mm') \
-	$(shell find $(THEOS)/include/LikeButton -name '*.mm')\
+	$(shell find $(THEOS)/include/LikeButton -name '*.mm') \
+	$(shell find $(THEOS)/include/WHToast -name '*.m') \
 	
 
 $(APPLICATION_NAME)_FRAMEWORKS = \
@@ -52,12 +55,14 @@ $(APPLICATION_NAME)_PRIVATE_FRAMEWORKS = \
 	MediaRemote \
 	AppSupport
 $(APPLICATION_NAME)_CFLAGS += \
-	-I$(THEOS)/include/WHToast \
-	#-Wno-error \
+	-Wno-error \
 	#-Wno-error=unused-variable \
 	#-Wno-error=unused-function \
-	-fvisibility=hidden
+	#-fvisibility=hidden \
+	#-Wdeprecated-declarations
 
+
+#ADDITIONAL_CFLAGS += -fobjc-arc -fvisibility=hidden -Werror -Wobjc-method-access -Os -Qunused-arguments -Wno-deprecated-declarations -Itemp -Wno-c++11-extensions -Xclang -fobjc-runtime-has-weak
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 TWEAK_NAME = alertappnoti

@@ -1,8 +1,6 @@
 #import "TestviewController.h"
 
-
-@interface TestviewController () {
-}
+@interface TestviewController ()
 @end
 
 @implementation TestviewController
@@ -29,19 +27,19 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+	return 10;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	return [NSString stringWithFormat:@"セクション:%ld", (long)section];
+	return [NSString stringWithFormat:@"section:%ld", (long)section];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return 20;
+	return 100;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return 35;
+	return 27;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -58,18 +56,15 @@
 		}
 
 
-	UISwitch *sw = [[UISwitch alloc] initWithFrame:CGRectZero];
-
-	[sw addTarget:self action:@selector(tapSwich:) forControlEvents:UIControlEventTouchUpInside];
-
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-	cell.accessoryView = sw;
+//	UISwitch *sw = [[UISwitch alloc] initWithFrame:CGRectZero];
+//	[sw addTarget:self action:@selector(tapSwich:) forControlEvents:UIControlEventTouchUpInside];
+//	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//	cell.accessoryView = sw;
 
 	cell.imageView.image = [UIImage imageNamed:@"box.png"];
 //	cell.imageView.backgroundColor = [UIColor grayColor];
 
-	cell.textLabel.text = [NSString stringWithFormat:@"メインタイトル:%ld", indexPath.row];
+	cell.textLabel.text = [NSString stringWithFormat:@"main title:%ld", indexPath.row];
 	cell.textLabel.textColor = [UIColor blackColor];
 	cell.textLabel.shadowColor = [UIColor grayColor];
 	cell.textLabel.shadowOffset = CGSizeMake(1.0, 1.0);
@@ -77,10 +72,10 @@
 	cell.textLabel.numberOfLines = 0;
 
 
-	cell.detailTextLabel.text = [NSString stringWithFormat:@"サブタイトル:%ld", indexPath.row];
-	cell.detailTextLabel.textColor = [UIColor blueColor];
+	cell.detailTextLabel.text = [NSString stringWithFormat:@"sub title:%ld", indexPath.row];
+	cell.detailTextLabel.textColor = [UIColor redColor];
 	cell.detailTextLabel.shadowColor = [UIColor grayColor];
-	cell.detailTextLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	cell.detailTextLabel.shadowOffset = CGSizeMake(0.8, 0.8);
 	[cell.detailTextLabel setFont:[UIFont boldSystemFontOfSize:11.0]];
 	cell.detailTextLabel.numberOfLines = 0;
 
@@ -129,12 +124,27 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row % 2 == 0) {
-		// 偶数セル
-		cell.backgroundColor = RGBA(255.0, 0.0, 255.0, 0.3);
+	// 偶数セル
+	cell.backgroundColor = RGBA(0, 0, 0, 0);
 	} else {
-		// 奇数セル
-		cell.backgroundColor = RGBA(0.0, 0.0, 0.0, 0.1);
+	// 奇数セル
+	cell.backgroundColor = RGBA(255.0, 0, 255.0, 0.2);
 	}
+/*
+	CATransform3D rotation;
+	rotation = CATransform3DMakeRotation((90.0*M_PI) / 180, 0.0, 0.7, 0.4);
+	rotation.m34 = 1.0 / - 600;
+	cell.layer.transform = rotation;
+	cell.layer.shadowColor = [[UIColor blackColor] CGColor];
+	cell.layer.shadowOffset = CGSizeMake(10, 10);
+	cell.alpha = 0;
+	[UIView beginAnimations:@"rotation" context:NULL];
+	[UIView setAnimationDuration:0.8];
+	cell.layer.transform = CATransform3DIdentity;
+	cell.alpha = 1;
+	cell.layer.shadowOffset = CGSizeMake(0, 0);
+	[UIView commitAnimations];
+*/
 }
 
 - (void)action {
