@@ -1,1 +1,0 @@
-/var/root/ios12THEOS/alertapp/pkg-actions/Makefile
