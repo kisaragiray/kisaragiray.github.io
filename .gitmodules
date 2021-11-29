@@ -1,3 +1,6 @@
 [submodule "WQSuspendView"]
 	path = WQSuspendView
 	url = https://github.com/liwq87112/WQSuspendView.git
+[submodule "Eneko"]
+	path = Eneko
+	url = https://github.com/schneelittchen/Eneko
