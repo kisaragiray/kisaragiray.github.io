@@ -1209,6 +1209,23 @@ Description: 西野カナ着信音
 Name: 西野カナ Ringtones
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.killallapp
+Architecture: iphoneos-arm
+Version: 1.0-2+debug
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Installed-Size: 140
+Depends: mobilesubstrate, libactivator
+Filename: ./debs/com.mikiyan1978.killallapp_1.0-2+debug_iphoneos-arm.deb
+Size: 13402
+MD5sum: 6bd0cea07da1aaf2a753638b6f3b8429
+SHA1: 129fb2cab95ba67480e88dd07e4e3127cee1ea4c
+SHA256: 1fd3d2c617be1a1bf6272a2f6ed7b5ab0bf0aaba147921c07b94cd8b19a8ec69
+SHA512: 720020dc7da7e30b3aeb3800c04a49e245f909f400012dab128f9d8fceee2be491b01fd7001f771dbf70961d4b5e90a609235f5cd78401c06f489326a4887cb0
+Description: An awesome Activator listener!
+Name: killallapp
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.killline
 Architecture: iphoneos-arm
 Version: 0.0.1-5
