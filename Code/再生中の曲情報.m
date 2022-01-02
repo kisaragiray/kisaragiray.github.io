@@ -1,4 +1,3 @@
-```objc
 void notiMusicTitle(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef result) {
 		
@@ -22,5 +21,3 @@ void notiMusicTitle(CFNotificationCenterRef center, void *observer, CFStringRef 
 		}
 	});
 }
-
-```
