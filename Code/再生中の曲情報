@@ -1,0 +1,26 @@
+```objc
+void notiMusicTitle(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef result) {
+		
+	if(result) {
+		
+		NSDictionary *dict = (__bridge NSDictionary *)result;
+		NSString *title = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
+		NSString *artist = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
+		NSString *album = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoAlbum];
+		NSString *bundleId= [[[%c(SBMediaController) sharedInstance] nowPlayingApplication] bundleIdentifier];
+		
+		[[%c(JBBulletinManager) sharedInstance] showBulletinWithTitle:album 
+			message:[NSString stringWithFormat: @"%@\n%@", title, artist] 
+			bundleID:bundleId 
+			hasSound:false 
+			soundID:0 
+			vibrateMode:0 
+			soundPath:@"" 
+			attachmentImage:nil 
+			overrideBundleImage:nil];
+		}
+	});
+}
+
+```
