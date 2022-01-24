@@ -44,6 +44,7 @@ void xxxxx(CFNotificationCenterRef center, void *observer, CFStringRef name, con
 %hook SBMediaController
 - (void)setNowPlayingInfo:(id)arg1 {
 	%orig;
+	
 	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"changeNowPlayingInfo" object:nil];
 }
 %end

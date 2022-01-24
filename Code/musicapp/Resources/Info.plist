@@ -52,16 +52,26 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>Fonts provided by application</key>
+	<array>
+		<string>Painting_With_Chocolate.ttf</string>
+		<string>UmaMusumeGothic.ttf</string>
+		<string>851MkPOP_100.ttf</string>
+		<string>RiiMonakaWLt.otf</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Painting_With_Chocolate.ttf</string>
+		<string>UmaMusumeGothic.ttf</string>
+		<string>851MkPOP_100.ttf</string>
+		<string>RiiMonakaWLt.otf</string>
+	</array>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
 		<integer>2</integer>
-	</array>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
 	</array>
 	<key>UILaunchImageFile</key>
 	<string>LaunchImage</string>
@@ -137,6 +147,10 @@
 			<key>UILaunchImageSize</key>
 			<string>{414, 736}</string>
 		</dict>
+	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
