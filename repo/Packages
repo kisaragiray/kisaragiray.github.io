@@ -3274,6 +3274,23 @@ SHA512: 514e0935d7179a39fb287ef7bf4cb324d0d917e38efe96464ad4167652cba764e9550d15
 Description: at-a-glance process watching tool
 Tag: purpose::console, role::hacker
 
+Package: science.xnu.undecimus
+Architecture: iphoneos-arm
+Version: 8.0.2
+Section: Applications
+Maintainer: xnu
+Depends: firmware (>=11.0)
+Filename: ./debs/unc0ver_Release_8.0.2.deb
+Size: 47220164
+MD5sum: 157daf3a521316f349de8fce6957326f
+SHA1: e84e26f7c196acb50bd17d42c29fa99f9fa31392
+SHA256: 06274feaad52e8a2d39ed1a47f7bf6212d67057b52965ed4ab3d03d2d5e51205
+SHA512: 8d5c97a29f653b314f7fb76d13c7b0a20498c7f5411c270f1b2f641f533ed85dec2aad83582a776e404312e5e034e6cf1a819c3854f1fe3089223203afeef85f
+Description: App resigned with Linus Henze's CoreTrust bypass so it doesn't expire.
+Name: unc0ver
+Author: xnu
+Tags: compatible_min::ios11.0
+
 Package: us.nakedproductions.dylibdisabler3
 Architecture: iphoneos-arm
 Version: 3.0-0
