@@ -250,6 +250,24 @@ Description: Develop your own tweaks and share them on the Flex Community Cloud
 Name: Flex 3 Beta
 Author: John Coates
 
+Package: com.serena.santanderfm
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Applications
+Maintainer: serena
+Depends: firmware (>=14.0)
+Filename: ./debs/Santander.deb
+Size: 1150720
+MD5sum: 8019e6a8f9b74e90181fe8d66fa1eef1
+SHA1: 84cb7814b1b1ea003c0777272aa4993cd6758ebd
+SHA256: 9206823beceb19f192021b0541ec694d81e1e1d80a345bcf7f95b837357c77ac
+SHA512: 97efc4a131b4731192ae074b0ed962eb124c18c69649c0694fb71b58ec07ded4012df5d884faae2f9da1c7cd874c8dc63e2481e3212e72fd34d160fd9ffb392d
+Description: Santander resigned with Linus Henze's CoreTrust bypass so it doesn't expire, and will persist in stock.
+Name: Santander
+Author: serena
+Tags: compatible_min::ios14.0
+Depiction: https://permasigner-depictions.itsnebula.net/depiction?name=Santander
+
 Package: com.iarrays.tsssaver
 Architecture: iphoneos-arm
 Version: 1.0-beta-4
