@@ -1977,6 +1977,23 @@ Depiction: https://kisaragiray.github.io/repo/depictions/?p=com.mikiyan1978.line
 Icon: https://kisaragiray.github.io/repo/info/line.png
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.linetest
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Installed-Size: 136
+Depends: mobilesubstrate
+Filename: ./debs/com.mikiyan1978.linetest_1.0_iphoneos-arm.deb
+Size: 4100
+MD5sum: f9346085f9d9688cfcbba420a03bd905
+SHA1: 9b63c2335c6c5c195fd7ee53d6280df10cd8c280
+SHA256: ece4ae5a82875621a8efe7fac1d30a636478cb003d62e4e9bce4e62bba71f9e4
+SHA512: e8aec16ffd0f28e02387d8502317d5f878ddf63f48e5c495378d8d6f53f0cb83cd1694519710351554cc01a000fbe21f9cac3dada7a42e0e7ec24801422ef8e9
+Description: LINEホームタブをスッキリさせます
+Name: NoHomeTab for LINE
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.m4aconverter
 Architecture: iphoneos-arm
 Version: 1.0
