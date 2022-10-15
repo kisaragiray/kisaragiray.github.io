@@ -1,9 +1,0 @@
-Package: com.mikiyan1978.musicapp
-Name: Music App
-Architecture: iphoneos-arm
-Description: An awesome application!
-Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
-Author: mikiyan1978 <mikiyan1978@gmail.com>
-Section: Utilities
-Version: 2022.1.19
-Installed-Size: 58820
