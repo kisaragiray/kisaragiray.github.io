@@ -3,6 +3,7 @@ ARCHS = arm64 arm64e
 TARGET = iphone:clang:latest:13.0
 FINALPACKAGE = 1
 FOR_RELEASE = 1
+SYSROOT=$(THEOS)/sdks/iPhoneOS14.0.sdk
 
 include $(THEOS)/makefiles/common.mk
 
@@ -11,9 +12,10 @@ $(APPLICATION_NAME)_FILES = \
 	$(wildcard *.mm) \
 	MusicAppController.xm \
 	$(shell find $(THEOS)/include/AutoScrollLabel -name '*.mm') \
+	$(shell find $(THEOS)/include/UIImageMask -name '*.m') \
 
-$(APPLICATION_NAME)_FRAMEWORKS = UIKit CoreGraphics
-$(APPLICATION_NAME)_PRIVATE_FRAMEWORKS = MediaRemote
+$(APPLICATION_NAME)_FRAMEWORKS = UIKit CoreGraphics CoreImage
+$(APPLICATION_NAME)_PRIVATE_FRAMEWORKS = MediaRemote BulletinBoard
 $(APPLICATION_NAME)_CFLAGS += \
 	-Wno-error \
 	#-Wno-error=unused-variable \
@@ -25,7 +27,9 @@ $(APPLICATION_NAME)_CFLAGS += \
 TWEAK_NAME = musicappSpringBoardHook
 $(TWEAK_NAME)_FILES = musicappSpringBoardHook.xm
 $(TWEAK_NAME)_PRIVATE_FRAMEWORKS = MediaRemote BulletinBoard
+$(TWEAK_NAME)_LIBRARIES = MobileGestalt
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
+$(TWEAK_NAME)_CFLAGS += -Wno-error
 
 RED=\033[0;31m
 CYAN=\033[0;36m

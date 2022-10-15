@@ -12,6 +12,7 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+	
 }
 
 
@@ -21,4 +22,17 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application {
 	
 }
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+	return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate {
+	return YES;
+}
 @end
+
