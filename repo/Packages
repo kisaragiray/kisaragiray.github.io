@@ -215,6 +215,23 @@ Author: Zeph <aboutzeph@gmail.com>
 Depiction: https://repo.twickd.com/package/com.twickd.zeph.toneenabler13
 SileoDepiction: https://repo.twickd.com/package/com.twickd.zeph.toneenabler13/native
 
+Package: com.alaise.azule
+Architecture: iphoneos-arm
+Version: 0.7.6
+Priority: optional
+Section: Utilities
+Maintainer: Alaise
+Depends: odcctools, bzip2, gzip, zstd, xz-utils, bash, jq, com.level3tjg.insert-dylib, plutil | com.bingner.plutil, ldid, coreutils, zip, unzip, sed, curl, me.alfhaily.opencli, com.linusyang.appinst
+Filename: ./debs/Azule-iOS.deb
+Size: 624432
+MD5sum: d8cb14bc8977d4d1db9cf602c123c6ae
+SHA1: d799bf9c2acf7d488a01515622b41051d4bd7559
+SHA256: a0a1abf3f0db19fc0521f94d28a7c1054477a8130073d3aab8217cd30937e73b
+SHA512: d4e55ad97340e669b135b047e2227ed87df3ee1b961bd590aef6323f598fe9ed953ee66d8d95082b1e49a8325b00b054024cf22e8cc344c3081a800a4614d4e4
+Description: A CLI tool that injects tweaks into jailed iOS apps
+Name: Azule
+Author: Alaise
+
 Package: com.pheux.fixrandomresprings
 Architecture: iphoneos-arm
 Version: 1.0
