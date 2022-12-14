@@ -2789,6 +2789,26 @@ Name: FlyJB
 Author: XsF1re
 Icon: file:///Library/PreferenceBundles/flyjbprefs.bundle/icon@2x.png
 
+Package: kr.xsf1re.vnodebypass
+Architecture: iphoneos-arm
+Version: 0.2.9
+Section: System
+Maintainer: XsF1re
+Installed-Size: 256
+Depends: firmware (>= 12.0)
+Filename: ./debs/kr.xsf1re.vnodebypass_0.2.9_iphoneos-arm.deb
+Size: 74278
+MD5sum: e9d9e6effeea7a85d801a59d59fa9506
+SHA1: 7adaf2c4847f2e7029899b782cfd71e58b95352d
+SHA256: 458296764ddbb2cf6720407e9933ee3466ea73522fa91b3b18243548d45a3d83
+SHA512: b31378735cb187a187c22fb322fd26a076a0ee1059ff3659adbeb1859e69d0ad7debb1fcf5ed4bb036977f993a2d0f8741d432d712a685d6db18aeb092e93642
+Description: An expermental tool to hide jailbreak files for bypass detection.
+Tag: role::hacker, compatible::ios12, compatible::ios13, compatible::ios14
+Author: XsF1re
+Name: vnodebypass
+Depiction:
+Icon: https://raw.githubusercontent.com/ichitaso/vnodebypass_theme/main/layout/Library/Themes/vnodebypass.theme/Icon.png
+
 Package: libactivator
 Architecture: iphoneos-arm
 Version: 1.9.13~beta5
