@@ -784,6 +784,23 @@ Description: アプリアイコンを長押しした時のプルプルモード�
 Name: AppDeletingMode for Activator
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.activatorpower
+Architecture: iphoneos-arm
+Version: 1.0
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Installed-Size: 152
+Depends: mobilesubstrate, libactivator
+Filename: ./debs/com.mikiyan1978.activatorpower_1.0_iphoneos-arm.deb
+Size: 20712
+MD5sum: df4f9bc93002470d350ae64d764784a4
+SHA1: 702e6dd6af6386bec4afd86989434031853b928f
+SHA256: b138da30ddf096490f2a512dfa5d16669a3bd9f776a603915b1c45f5818f18c2
+SHA512: af3d0b49e146ec4d43c7a0a7bf48ab2a31ef0b7621b59aa6557c25995c2898e640a7b914e26e2d80f65ecf2f2e95f83749647f1b4b9e615976b41bc0ced1861f
+Description: An awesome Activator listener!
+Name: Activator for Power Controller
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.ado
 Architecture: iphoneos-arm
 Version: 1.0
