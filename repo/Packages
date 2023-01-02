@@ -885,6 +885,24 @@ Tag: mikiyan1978::true
 Name: App Killer for Activator
 Author: mikiyan1978 <mikiyan1978@gmail.com>
 
+Package: com.mikiyan1978.appwindow
+Architecture: iphoneos-arm
+Version: 2023.01.02
+Section: Tweaks
+Maintainer: mikiyan1978 <mikiyan1978@gmail.com>
+Installed-Size: 280
+Depends: mobilesubstrate
+Filename: ./debs/com.mikiyan1978.appwindow_2023.01.02_iphoneos-arm.deb
+Size: 14806
+MD5sum: dc3da69fd7a016a003cd50211d006fe9
+SHA1: 81414959a1bfc85f839118602fe404a3cd09b4f3
+SHA256: 8c729b9792721d9f111ff8adfb2073f556d4151fe6ce73b8939f3765d059da71
+SHA512: 99107a58e5e8024c1af769c90de79352afa984694f7df3d08897a8892ec860fd152d6f089b72519441281c342dbf728726ffa3472fff12891e888db9b7e69bc8
+Description: An awesome MobileSubstrate tweak!
+Name: HomeScreen blur
+Depiction:
+Author: mikiyan1978 <mikiyan1978@gmail.com>
+
 Package: com.mikiyan1978.autoinstalld
 Architecture: iphoneos-arm
 Version: 1.0
