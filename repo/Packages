@@ -3290,6 +3290,23 @@ Author: Dustin Howett <cydia.pl@relay.howett.net>
 dev: dustinhowett
 Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=preferenceloader2Data
 
+Package: ra1npoc
+Architecture: iphoneos-arm
+Version: 2.1.4
+Section: System
+Maintainer: sakuRdev/dora2ios
+Depends: firmware (>= 9.0)
+Filename: ./debs/ra1npoc_2.1.4_iphoneos-arm (1).deb
+Size: 632686
+MD5sum: ac437a89053d2e6f99ae1f108eb2cc53
+SHA1: 33a9ea4c517a91760c15b9be2f4963424f204374
+SHA256: 2bd1c369ce540924b35b96dff9498f67cd62cfa3e4af1f18100d174ad4804fc0
+SHA512: 743227ddcc0b51e4fa595a103a981d7eb6b194784d14919c0c09d46bb37a1b11fbd0ff0000ab5cdac7eaa39a4c74d9f4f58a248191e69588896e9e8aa6b99b5c
+Description: checkrain clone v2.1.4 for iphoneos by interception
+Name: ra1npoc (builtin)
+Author: sakuRdev/dora2ios
+Depiction: https://dora2ios.github.io/info/ra1npoc/
+
 Package: com.estertion.replaykiteverywhere
 Architecture: iphoneos-arm
 Version: 1.7.9
